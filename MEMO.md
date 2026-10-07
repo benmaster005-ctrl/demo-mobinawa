@@ -191,7 +191,7 @@ Le jeu de démonstration compte 36 organisations camerounaises fictives, deux pa
 
 ## Navigation
 
-**Le menu** s'ouvre depuis l'accueil. Il porte le logo Mobinawa en titre (v84), puis : Mon compte Mobinawa, Services gratuits & pratiques, Grille tarifaire, Notifications, les lignes de crédit pour un compte PRO, À propos de Mobinawa, Langue (v94), le bouton « Souscrire un compte ProCom » (contour orange, sans fond plein, v85), une ligne de séparation (v86) et Se déconnecter. Toutes les lignes ont la même couleur d'icône, y compris Numéros d'urgence (v85). La ligne « Accueil » a été retirée (v84), puisque le menu ne s'ouvre que depuis l'accueil. La ligne « Numéros d'urgence », ajoutée en v84, a été retirée en v94 : le service reste accessible par les services gratuits.
+**Le menu** s'ouvre depuis l'accueil. Il porte le logo Mobinawa en titre (v84), puis : Mon compte Mobinawa, Services gratuits & pratiques, Grille tarifaire, Notifications, Historique des recharges et Mes factures pour un compte PRO actif uniquement (retirées pour un compte Mobinawa-Business, y compris après migration, v99), À propos de Mobinawa, Langue (v94), le bouton « Souscrire un compte ProCom » (contour orange, sans fond plein, v85), une ligne de séparation (v86) et Se déconnecter. Toutes les lignes ont la même couleur d'icône, y compris Numéros d'urgence (v85). La ligne « Accueil » a été retirée (v84), puisque le menu ne s'ouvre que depuis l'accueil. La ligne « Numéros d'urgence », ajoutée en v84, a été retirée en v94 : le service reste accessible par les services gratuits.
 
 **Langue.** La ligne « Langue » du menu a pour icône le drapeau de la langue choisie et affiche son nom à droite. Le français est la langue par défaut dans les pays francophones (drapeau français) ; l'écran « Langue » permet de choisir l'anglais (drapeau britannique, liste `LANGUES`) (v94). Le choix vaut pour la session ; en anglais, toute l'app est traduite (v95, voir « Traduction »).
 
@@ -285,9 +285,11 @@ Après dépôt d'une demande, aucun bandeau ne signale le dossier sur l'accueil.
 
 ## Le prototype
 
-**Le fichier.** `Mobinawa_v98.jsx`, un composant React d'environ 5 500 lignes, sans dépendance hors `react` et `lucide-react`. Il est abondamment commenté : chaque règle produit non évidente porte l'explication de son existence. C'est le support de reprise le plus complet.
+**Le fichier.** `Mobinawa_v99.jsx`, un composant React d'environ 5 500 lignes, sans dépendance hors `react` et `lucide-react`. Il est abondamment commenté : chaque règle produit non évidente porte l'explication de son existence. C'est le support de reprise le plus complet.
 
 **Convention de version.** Le numéro du fichier est incrémenté à chaque itération. Une constante `VERSION_PROTO` en tête du fichier porte le même numéro et s'affiche en pied de l'écran « À propos ». Les deux ne doivent jamais diverger.
+
+**Icône du site.** L'onglet du navigateur affiche le logo Mobinawa (`index.html` du dépôt : icône PNG intégrée, et icône d'écran d'accueil sur fond blanc pour iPhone). La page d'aperçu publiée dans Claude ne peut afficher qu'un emoji comme icône d'onglet.
 
 **Aperçu dans la conversation.** Depuis la v67, chaque version est aussi publiée comme page web autonome (un seul fichier HTML, construit à partir du `.jsx`), qui s'ouvre directement dans la conversation sans avoir à cliquer sur le fichier. Cette page sert à la relecture ; le dépôt GitHub reste alimenté par le `.jsx`.
 

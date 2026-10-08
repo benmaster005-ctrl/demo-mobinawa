@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img alt="Version" src="https://img.shields.io/badge/prototype-v122-E85D04?style=for-the-badge" />
+  <img alt="Version" src="https://img.shields.io/badge/prototype-v124-E85D04?style=for-the-badge" />
   <img alt="React 18" src="https://img.shields.io/badge/React-18.3-3D752F?style=for-the-badge&logo=react&logoColor=white" />
   <img alt="Vite 5" src="https://img.shields.io/badge/Vite-5.4-3D752F?style=for-the-badge&logo=vite&logoColor=white" />
   <img alt="Tailwind CSS 3" src="https://img.shields.io/badge/Tailwind-3.4-3D752F?style=for-the-badge&logo=tailwindcss&logoColor=white" />
@@ -108,7 +108,7 @@ Le dépôt est volontairement **à plat**, sans aucun sous dossier. Le dépôt d
 .
 ├── index.html            Page d'entrée : balises meta, icônes (logo Mobinawa), point de montage #root
 ├── main.jsx              Point d'entrée React : charge automatiquement la dernière version de l'app
-├── Mobinawa_v122.jsx     L'application complète (un seul composant de plus de 7 000 lignes)
+├── Mobinawa_v124.jsx     L'application complète (un seul composant de plus de 7 000 lignes)
 ├── index.css             Directives Tailwind (base, components, utilities)
 ├── tailwind.config.js    Fichiers analysés par Tailwind, dont tous les Mobinawa*.jsx
 ├── postcss.config.js     Tailwind et Autoprefixer
@@ -260,7 +260,7 @@ Tout l'état vit dans `MobinawaApp` sous forme de `useState`. Les écrans le re�
 | `about` | `AboutScreen` | À propos de Mobinawa | Menu |
 | `langue` | `LangueScreen` | Langue | Menu |
 
-Hors pile de navigation : `CompteSupprimeScreen` (remplace toute l'app quand `compteSupprime` est renseigné) et les fenêtres `SideMenu`, `WelcomeModal`, `RechargeModal`, `TransfertModal`, `AppelGratuitModal`, `InfosProcomModal`.
+Hors pile de navigation : `CompteSupprimeScreen` (remplace toute l'app quand `compteSupprime` est renseigné) et les fenêtres `SideMenu`, `WelcomeModal`, `RechargeModal`, `TransfertModal`, `AppelGratuitModal`, `InfosProcomModal`, `MyAppModal`.
 
 ### Le menu
 
@@ -472,7 +472,7 @@ Les polices sont chargées depuis Google Fonts par une règle `@import` dans le 
 | `DrapeauRond`, `Flag`, `SelecteurPays` | Drapeaux et sélecteur de pays |
 | `RangeeIcones`, `TitreSurPhoto` | Rangées défilantes et titres de l'accueil |
 | `LogoOrg` | Pastille aux initiales et à la couleur d'une organisation |
-| `NuageCle` | Icône SVG unique : une grosse clé qui plonge en diagonale dans un nuage, pour l'accès MyApp (propriété `fond` : couleur du fond, qui détache la clé du nuage) |
+| `NuageCle`, `NuageCleTuile` | Icône SVG unique : une grosse clé qui plonge en diagonale dans un nuage, pour l'accès MyApp (propriété `fond` : couleur du fond, qui détache la clé du nuage) |
 | `Progression` | Schéma Basic, PRO, Business |
 | `AppelsEtDepenses` | Historique filtrable de l'espace client (mode limité ou complet) |
 
@@ -625,7 +625,7 @@ La liste complète et à jour figure dans la section « Points ouverts » de `ME
 | v84 à v94 | Numéros d'urgence, menu repensé, mois offert dans l'historique, Ma conso, filtres et historique complet, ouverture de l'annuaire au clavier, onglet Langue |
 | v95 à v98 | Traduction anglaise complète, recherche selon la langue, filet de sécurité de traduction |
 | v99 | Factures et recharges retirées du menu pour Business, logo en icône du site |
-| v100 à v122 | Fiche entreprise réorganisée (identité et activités dans un bloc, numéro PRO sur une ligne), « Communiquer gratuitement », « Accéder à nos services », fenêtre de communication gratuite simplifiée, présentation Business réécrite, thème toujours clair, formulaire Business en deux parties et e-mail de l'entreprise, boutons « Souscrire à… », titres « Formulaire… », icônes de titre sans fond, site web de l'entreprise |
+| v100 à v124 | Fiche entreprise réorganisée (identité et activités dans un bloc, numéro PRO sur une ligne), « Communiquer gratuitement », « Accéder à nos services », fenêtre de communication gratuite simplifiée, présentation Business réécrite, thème toujours clair, formulaire Business en deux parties et e-mail de l'entreprise, boutons « Souscrire à… », titres « Formulaire… », icônes de titre sans fond, site web de l'entreprise |
 
 Le détail de chaque décision est daté dans `MEMO.md` et dans les commentaires du code.
 

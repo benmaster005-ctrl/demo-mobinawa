@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img alt="Version" src="https://img.shields.io/badge/prototype-v106-E85D04?style=for-the-badge" />
+  <img alt="Version" src="https://img.shields.io/badge/prototype-v113-E85D04?style=for-the-badge" />
   <img alt="React 18" src="https://img.shields.io/badge/React-18.3-3D752F?style=for-the-badge&logo=react&logoColor=white" />
   <img alt="Vite 5" src="https://img.shields.io/badge/Vite-5.4-3D752F?style=for-the-badge&logo=vite&logoColor=white" />
   <img alt="Tailwind CSS 3" src="https://img.shields.io/badge/Tailwind-3.4-3D752F?style=for-the-badge&logo=tailwindcss&logoColor=white" />
@@ -108,7 +108,7 @@ Le dépôt est volontairement **à plat**, sans aucun sous dossier. Le dépôt d
 .
 ├── index.html            Page d'entrée : balises meta, icônes (logo Mobinawa), point de montage #root
 ├── main.jsx              Point d'entrée React : charge automatiquement la dernière version de l'app
-├── Mobinawa_v106.jsx     L'application complète (un seul composant de plus de 7 000 lignes)
+├── Mobinawa_v113.jsx     L'application complète (un seul composant de plus de 7 000 lignes)
 ├── index.css             Directives Tailwind (base, components, utilities)
 ├── tailwind.config.js    Fichiers analysés par Tailwind, dont tous les Mobinawa*.jsx
 ├── postcss.config.js     Tailwind et Autoprefixer
@@ -231,7 +231,7 @@ Tout l'état vit dans `MobinawaApp` sous forme de `useState`. Les écrans le re�
 
 - **Un seul écran à la fois**, désigné par la chaîne `screen`. Il n'y a pas d'adresse par écran.
 - `goTo(ecran)` **empile** l'écran courant. Revenir à l'accueil vide la pile, tout comme l'envoi d'un formulaire de souscription, pour que la flèche de l'accusé de réception ne rouvre pas le formulaire.
-- **Aucun bandeau d'en-tête.** L'accueil porte sa rangée du haut sur la photo. Toutes les autres pages ouvrent sur une **rangée de titre** : flèche de retour à gauche (`BoutonRetour`), titre, logo Mobinawa à droite (`LogoAccueil`, retour direct à l'accueil). Cette rangée reste **figée en haut** au défilement grâce à la classe `rangee-titre`.
+- **Aucun bandeau d'en-tête.** L'accueil porte sa rangée du haut sur la photo. Toutes les autres pages ouvrent sur une **rangée de titre** : flèche de retour à gauche (`BoutonRetour`), icône de l'écran (`IconeEcran`, celle de son onglet dans le menu), titre, logo Mobinawa à droite (`LogoAccueil`, retour direct à l'accueil). Cette rangée reste **figée en haut** au défilement grâce à la classe `rangee-titre`.
 - Les deux boutons lisent leur action dans deux contextes React, `RetourContext` et `AccueilContext`, fournis par `MobinawaApp`. Un nouvel écran n'a donc rien à recevoir pour les afficher.
 - Chaque changement d'écran remet le défilement en haut de page.
 
@@ -321,7 +321,7 @@ Toutes les données sont des **constantes** déclarées en haut du fichier. Les 
 - **Boutons de souscription** : leur libellé suit l'état du compte (« Souscrire un compte ProCom », « Ma demande en cours », « Mon compte ProCom ») pour ne jamais proposer de souscrire deux fois. La logique est centralisée dans `cibleSouscription(statut)`.
 - **Grille tarifaire avant demande** : sur toutes les présentations d'offre, « Consulter la grille tarifaire » précède le bouton de demande.
 - **Business** : l'app ne gère que la demande. Après validation, le menu ne propose plus factures ni recharges.
-- **Annuaire** : seules les organisations Business y figurent. Le numéro de la fiche est un lien `tel:` complet, préfixe compris ; l'appel ou le message gratuit passe par la liste de contacts Mobinawa (« Communiquer gratuitement »).
+- **Annuaire** : seules les organisations Business y figurent. Le numéro de la fiche est un cartouche vert façon numéro de service, lien `tel:` complet, préfixe compris ; l'appel ou le message gratuit passe par la liste de contacts Mobinawa (« Communiquer gratuitement »).
 - **Nom de l'opérateur** : un seul nom par opérateur, celui qui signe ses e-mails, partout dans l'app.
 
 ---
@@ -467,7 +467,7 @@ Les polices sont chargées depuis Google Fonts par une règle `@import` dans le 
 | `TextField`, `TextArea`, `SelectField`, `LockedField`, `FileField` | Champs de formulaire avec libellé, aide et erreur |
 | `AlertBanner`, `RuleCallout` | Encadrés d'alerte et de règle (cadenas) |
 | `Toast` | Message temporaire en bas d'écran, via `showToast(message)` |
-| `BoutonRetour`, `LogoAccueil` | Les deux boutons de la rangée de titre |
+| `BoutonRetour`, `IconeEcran`, `LogoAccueil` | Flèche de retour, icône de l'écran et logo de la rangée de titre |
 | `BoutonSouscrire` | Bouton de souscription de l'accueil, à bandeau « PRO » |
 | `DrapeauRond`, `Flag`, `SelecteurPays` | Drapeaux et sélecteur de pays |
 | `RangeeIcones`, `TitreSurPhoto` | Rangées défilantes et titres de l'accueil |
@@ -483,6 +483,7 @@ function MonEcran() {
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2 rangee-titre">
         <BoutonRetour />
+        <IconeEcran icon={Sparkles} />
         <h2 className="font-extrabold text-lg leading-tight" style={{ color: C.text, fontFamily: FONT_HEAD }}>
           Titre de l'écran
         </h2>
@@ -623,7 +624,7 @@ La liste complète et à jour figure dans la section « Points ouverts » de `ME
 | v84 à v94 | Numéros d'urgence, menu repensé, mois offert dans l'historique, Ma conso, filtres et historique complet, ouverture de l'annuaire au clavier, onglet Langue |
 | v95 à v98 | Traduction anglaise complète, recherche selon la langue, filet de sécurité de traduction |
 | v99 | Factures et recharges retirées du menu pour Business, logo en icône du site |
-| v100 à v106 | Fiche entreprise réorganisée (identité et activités dans un bloc, numéro PRO sur une ligne), « Communiquer gratuitement », « Accéder à nos services », fenêtre de communication gratuite simplifiée, présentation Business réécrite, thème toujours clair |
+| v100 à v113 | Fiche entreprise réorganisée (identité et activités dans un bloc, numéro PRO sur une ligne), « Communiquer gratuitement », « Accéder à nos services », fenêtre de communication gratuite simplifiée, présentation Business réécrite, thème toujours clair |
 
 Le détail de chaque décision est daté dans `MEMO.md` et dans les commentaires du code.
 

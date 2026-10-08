@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img alt="Version" src="https://img.shields.io/badge/prototype-v128-E85D04?style=for-the-badge" />
+  <img alt="Version" src="https://img.shields.io/badge/prototype-v131-E85D04?style=for-the-badge" />
   <img alt="React 18" src="https://img.shields.io/badge/React-18.3-3D752F?style=for-the-badge&logo=react&logoColor=white" />
   <img alt="Vite 5" src="https://img.shields.io/badge/Vite-5.4-3D752F?style=for-the-badge&logo=vite&logoColor=white" />
   <img alt="Tailwind CSS 3" src="https://img.shields.io/badge/Tailwind-3.4-3D752F?style=for-the-badge&logo=tailwindcss&logoColor=white" />
@@ -108,7 +108,7 @@ Le dépôt est volontairement **à plat**, sans aucun sous dossier. Le dépôt d
 .
 ├── index.html            Page d'entrée : balises meta, icônes (logo Mobinawa), point de montage #root
 ├── main.jsx              Point d'entrée React : charge automatiquement la dernière version de l'app
-├── Mobinawa_v128.jsx     L'application complète (un seul composant de plus de 7 000 lignes)
+├── Mobinawa_v131.jsx     L'application complète (un seul composant de plus de 7 000 lignes)
 ├── index.css             Directives Tailwind (base, components, utilities)
 ├── tailwind.config.js    Fichiers analysés par Tailwind, dont tous les Mobinawa*.jsx
 ├── postcss.config.js     Tailwind et Autoprefixer
@@ -203,6 +203,7 @@ Tout l'état vit dans `MobinawaApp` sous forme de `useState`. Les écrans le re�
 | `menuOpen`, `welcomeOpen`, `rechargeTarget`, `transfertTarget` | Ouverture du menu et des fenêtres |
 | `paysPro`, `paysProcom`, `procomFiltre` | Pays choisi par un usager de la diaspora, pays de l'annuaire consulté, filtre de l'annuaire (catégorie, recherche, ouverture du clavier) |
 | `tarifsOffre` | Onglet d'ouverture de la grille tarifaire (Business depuis la présentation Business) |
+| `vueBusiness` | `collaborateur` ou `manager` : vue de démonstration d'un compte Business actif |
 | `langue` | `fr` ou `en`. Copiée dans la variable de module `langueUI` à chaque rendu |
 | `compteSupprime`, `toast` | Écran de compte supprimé, message temporaire en bas d'écran |
 
@@ -251,7 +252,7 @@ Tout l'état vit dans `MobinawaApp` sous forme de `useState`. Les écrans le re�
 | `subscribePro` | `SubscribeProForm` | Formulaire Mobinawa-PRO | « Souscrire à Mobinawa-PRO » |
 | `subscribeBusiness` | `SubscribeBusinessForm` | Formulaire Mobinawa-Business | « Souscrire à Mobinawa-Business », « Migrer vers Mobinawa-Business » |
 | `attente` | `AttenteScreen` | Ma demande | Après l'envoi d'un formulaire, « Ma demande en cours » |
-| `account` | `AccountScreen` (`BasicAccount` ou `ProAccount`) | Mon compte ou Mon espace client | Menu |
+| `account` | `AccountScreen` (`BasicAccount`, `ProAccount` ou `ManagerAccount`) | Mon compte, Mon espace client ou Mon espace Manager | Menu, badge de l'accueil |
 | `historique` | `AppelsEtDepenses` (mode complet) | Historique | « Voir tout l'historique » de l'espace client, au delà de 6 éléments |
 | `conso` | `ConsoScreen` | Ma conso | Bouton « Ma conso » de l'espace client |
 | `recharges` | `RechargesScreen` | Historique des recharges | Menu (PRO actif), « Mes recharges » |
@@ -336,6 +337,7 @@ Toutes les données sont des **constantes** déclarées en haut du fichier. Les 
 | Une souscription PRO | Badge Mobinawa-Basic en haut de l'accueil, Souscrire à Mobinawa-PRO, remplir, envoyer, puis **Simuler la validation par nos équipes** |
 | Le mois offert et le découvert | Espace client, **Simuler le prélèvement de ce mois** une fois (mois offert), puis une seconde fois (débit) |
 | Une recharge et un transfert | Espace client, Recharger (carte Visa simulée), puis Transférer |
+| La vue Manager d'un compte Business | Souscrire à Mobinawa-Business, envoyer, simuler la validation, puis bouton **Manager** du bloc Démonstration et badge de l'accueil |
 | Une migration vers Business | Espace client PRO, Découvrir la migration, Migrer, envoyer la fiche, simuler la validation |
 | Une suppression de compte | Menu, lien de simulation de suppression, puis Se réinscrire |
 | L'anglais | Menu, Langue, English |
@@ -626,7 +628,8 @@ La liste complète et à jour figure dans la section « Points ouverts » de `ME
 | v84 à v94 | Numéros d'urgence, menu repensé, mois offert dans l'historique, Ma conso, filtres et historique complet, ouverture de l'annuaire au clavier, onglet Langue |
 | v95 à v98 | Traduction anglaise complète, recherche selon la langue, filet de sécurité de traduction |
 | v99 | Factures et recharges retirées du menu pour Business, logo en icône du site |
-| v100 à v128 | Fiche entreprise réorganisée (identité et activités dans un bloc, numéro PRO sur une ligne), « Communiquer gratuitement », « Accéder à nos services », fenêtre de communication gratuite simplifiée, présentation Business réécrite, thème toujours clair, formulaire Business en deux parties et e-mail de l'entreprise, boutons « Souscrire à… », titres « Formulaire… », icônes de titre sans fond, site web de l'entreprise |
+| v100 à v130 |
+| v131 | Espace Manager Business : crédit d'appel de l'entreprise, numéros PRO, reporting des appels par numéro ; choix Collaborateur ou Manager dans la démonstration | Fiche entreprise réorganisée (identité et activités dans un bloc, numéro PRO sur une ligne), « Communiquer gratuitement », « Accéder à nos services », fenêtre de communication gratuite simplifiée, présentation Business réécrite, thème toujours clair, formulaire Business en deux parties et e-mail de l'entreprise, boutons « Souscrire à… », titres « Formulaire… », icônes de titre sans fond, site web de l'entreprise |
 
 Le détail de chaque décision est daté dans `MEMO.md` et dans les commentaires du code.
 

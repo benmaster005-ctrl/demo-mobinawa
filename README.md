@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img alt="Version" src="https://img.shields.io/badge/prototype-v99-E85D04?style=for-the-badge" />
+  <img alt="Version" src="https://img.shields.io/badge/prototype-v106-E85D04?style=for-the-badge" />
   <img alt="React 18" src="https://img.shields.io/badge/React-18.3-3D752F?style=for-the-badge&logo=react&logoColor=white" />
   <img alt="Vite 5" src="https://img.shields.io/badge/Vite-5.4-3D752F?style=for-the-badge&logo=vite&logoColor=white" />
   <img alt="Tailwind CSS 3" src="https://img.shields.io/badge/Tailwind-3.4-3D752F?style=for-the-badge&logo=tailwindcss&logoColor=white" />
@@ -108,7 +108,7 @@ Le dépôt est volontairement **à plat**, sans aucun sous dossier. Le dépôt d
 .
 ├── index.html            Page d'entrée : balises meta, icônes (logo Mobinawa), point de montage #root
 ├── main.jsx              Point d'entrée React : charge automatiquement la dernière version de l'app
-├── Mobinawa_v99.jsx      L'application complète (un seul composant de plus de 7 000 lignes)
+├── Mobinawa_v106.jsx     L'application complète (un seul composant de plus de 7 000 lignes)
 ├── index.css             Directives Tailwind (base, components, utilities)
 ├── tailwind.config.js    Fichiers analysés par Tailwind, dont tous les Mobinawa*.jsx
 ├── postcss.config.js     Tailwind et Autoprefixer
@@ -321,7 +321,7 @@ Toutes les données sont des **constantes** déclarées en haut du fichier. Les 
 - **Boutons de souscription** : leur libellé suit l'état du compte (« Souscrire un compte ProCom », « Ma demande en cours », « Mon compte ProCom ») pour ne jamais proposer de souscrire deux fois. La logique est centralisée dans `cibleSouscription(statut)`.
 - **Grille tarifaire avant demande** : sur toutes les présentations d'offre, « Consulter la grille tarifaire » précède le bouton de demande.
 - **Business** : l'app ne gère que la demande. Après validation, le menu ne propose plus factures ni recharges.
-- **Annuaire** : seules les organisations Business y figurent. Le numéro de la fiche est un lien `tel:` complet, préfixe compris ; l'appel gratuit passe par la liste de contacts Mobinawa (« Appeler gratuitement »).
+- **Annuaire** : seules les organisations Business y figurent. Le numéro de la fiche est un lien `tel:` complet, préfixe compris ; l'appel ou le message gratuit passe par la liste de contacts Mobinawa (« Communiquer gratuitement »).
 - **Nom de l'opérateur** : un seul nom par opérateur, celui qui signe ses e-mails, partout dans l'app.
 
 ---
@@ -444,6 +444,7 @@ Les polices sont chargées depuis Google Fonts par une règle `@import` dans le 
 | `tuile-icone` | Icônes des rangées de l'accueil, à 52 % de leur tuile |
 
 - Tous les champs de saisie ont un texte de **16 pixels minimum**, pour que Safari sur iPhone ne zoome pas au toucher.
+- L'app est **toujours en clair** : `color-scheme: only light` et une règle `prefers-color-scheme: dark` empêchent l'assombrissement automatique de Samsung Internet et de Chrome. Ne retirez pas les balises `color-scheme` de `index.html`.
 
 ### Repères d'interface
 
@@ -622,6 +623,7 @@ La liste complète et à jour figure dans la section « Points ouverts » de `ME
 | v84 à v94 | Numéros d'urgence, menu repensé, mois offert dans l'historique, Ma conso, filtres et historique complet, ouverture de l'annuaire au clavier, onglet Langue |
 | v95 à v98 | Traduction anglaise complète, recherche selon la langue, filet de sécurité de traduction |
 | v99 | Factures et recharges retirées du menu pour Business, logo en icône du site |
+| v100 à v106 | Fiche entreprise réorganisée (identité et activités dans un bloc, numéro PRO sur une ligne), « Communiquer gratuitement », « Accéder à nos services », fenêtre de communication gratuite simplifiée, présentation Business réécrite, thème toujours clair |
 
 Le détail de chaque décision est daté dans `MEMO.md` et dans les commentaires du code.
 

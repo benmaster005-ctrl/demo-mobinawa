@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img alt="Version" src="https://img.shields.io/badge/prototype-v124-E85D04?style=for-the-badge" />
+  <img alt="Version" src="https://img.shields.io/badge/prototype-v128-E85D04?style=for-the-badge" />
   <img alt="React 18" src="https://img.shields.io/badge/React-18.3-3D752F?style=for-the-badge&logo=react&logoColor=white" />
   <img alt="Vite 5" src="https://img.shields.io/badge/Vite-5.4-3D752F?style=for-the-badge&logo=vite&logoColor=white" />
   <img alt="Tailwind CSS 3" src="https://img.shields.io/badge/Tailwind-3.4-3D752F?style=for-the-badge&logo=tailwindcss&logoColor=white" />
@@ -108,7 +108,7 @@ Le dépôt est volontairement **à plat**, sans aucun sous dossier. Le dépôt d
 .
 ├── index.html            Page d'entrée : balises meta, icônes (logo Mobinawa), point de montage #root
 ├── main.jsx              Point d'entrée React : charge automatiquement la dernière version de l'app
-├── Mobinawa_v124.jsx     L'application complète (un seul composant de plus de 7 000 lignes)
+├── Mobinawa_v128.jsx     L'application complète (un seul composant de plus de 7 000 lignes)
 ├── index.css             Directives Tailwind (base, components, utilities)
 ├── tailwind.config.js    Fichiers analysés par Tailwind, dont tous les Mobinawa*.jsx
 ├── postcss.config.js     Tailwind et Autoprefixer
@@ -241,9 +241,10 @@ Tout l'état vit dans `MobinawaApp` sous forme de `useState`. Les écrans le re�
 | --- | --- | --- | --- |
 | `home` | `HomeScreen` | (accueil plein écran) | Démarrage, logo, flèche depuis le premier écran |
 | `procom` | `ProcomScreen` | Annuaire ProCom | Barre de recherche de l'accueil (clavier ouvert), catégories |
-| `services` | `ServicesScreen` | Services gratuits & pratiques | Menu, rangée « Nos services gratuits » |
+| `services` | `ServicesScreen` | Services gratuits & pratiques | Menu, titre et rangée « Nos services gratuits » de l'accueil |
+| `categories` | `CategoriesScreen` | Toutes les catégories | Titre « Choisir une catégorie » de l'accueil |
 | `urgences` | `UrgencesScreen` | Numéros d'urgence | Tuile « Numéros d'urgence » de l'accueil ou des services |
-| `evolution` | `EvolutionScreen` | Faire évoluer mon compte | Bouton « Souscrire un compte ProCom » de l'accueil et du menu, Mon compte |
+| `evolution` | `EvolutionScreen` | Faire évoluer mon compte | Badge Mobinawa-Basic de l'accueil, bouton « Souscrire un compte ProCom » du menu, Mon compte |
 | `moreInfoPro` | `MoreInfoProScreen` (mode « choix ») | Mobinawa-PRO | Carte PRO de Mon compte ; pour la diaspora, commence par le choix du pays |
 | `infoPro` | `MoreInfoProScreen` (mode « info ») | Mobinawa-PRO | « En savoir plus » de la carte PRO (usagers locaux) |
 | `moreInfoBusiness` | `MoreInfoBusinessScreen` | Mobinawa-Business | « En savoir plus » de la carte Business, découverte de la migration |
@@ -318,7 +319,7 @@ Toutes les données sont des **constantes** déclarées en haut du fichier. Les 
 ### Parcours et affichages conditionnels
 
 - **Diaspora** : jamais d'offre Business, pas de bouton « Comparer les deux offres », pas de « En savoir plus » sur la carte PRO ; toute demande PRO commence par le **choix du pays**.
-- **Boutons de souscription** : leur libellé suit l'état du compte (« Souscrire un compte ProCom », « Ma demande en cours », « Mon compte ProCom ») pour ne jamais proposer de souscrire deux fois. La logique est centralisée dans `cibleSouscription(statut)`.
+- **Accès à la souscription** : en haut de l'accueil, le badge du niveau de compte mène selon l'état à « Faire évoluer mon compte », « Ma demande » ou au compte ; dans le menu, le bouton « Souscrire un compte ProCom » suit la même logique (`cibleSouscription(statut)`), pour ne jamais proposer de souscrire deux fois.
 - **Grille tarifaire avant demande** : sur toutes les présentations d'offre, « Consulter la grille tarifaire » précède le bouton de demande.
 - **Business** : l'app ne gère que la demande. Après validation, le menu ne propose plus factures ni recharges.
 - **Annuaire** : seules les organisations Business y figurent. Le numéro de la fiche est un cartouche vert façon numéro de service ; seule sa partie numéro est un lien `tel:` complet, préfixe compris ; l'appel ou le message gratuit passe par la liste de contacts Mobinawa (« Communiquer gratuitement »).
@@ -332,7 +333,7 @@ Toutes les données sont des **constantes** déclarées en haut du fichier. Les 
 | --- | --- |
 | Un usager camerounais | Session par défaut (`+237 6 55 12 34 78`) |
 | Un usager de la diaspora | Bloc **Démonstration** en bas de l'accueil, choisissez GTS Africa (`+33 6 12 34 56 78`) |
-| Une souscription PRO | Souscrire un compte ProCom, Souscrire à Mobinawa-PRO, remplir, envoyer, puis **Simuler la validation par nos équipes** |
+| Une souscription PRO | Badge Mobinawa-Basic en haut de l'accueil, Souscrire à Mobinawa-PRO, remplir, envoyer, puis **Simuler la validation par nos équipes** |
 | Le mois offert et le découvert | Espace client, **Simuler le prélèvement de ce mois** une fois (mois offert), puis une seconde fois (débit) |
 | Une recharge et un transfert | Espace client, Recharger (carte Visa simulée), puis Transférer |
 | Une migration vers Business | Espace client PRO, Découvrir la migration, Migrer, envoyer la fiche, simuler la validation |
@@ -468,11 +469,11 @@ Les polices sont chargées depuis Google Fonts par une règle `@import` dans le 
 | `AlertBanner`, `RuleCallout` | Encadrés d'alerte et de règle (cadenas) |
 | `Toast` | Message temporaire en bas d'écran, via `showToast(message)` |
 | `BoutonRetour`, `IconeEcran`, `LogoAccueil` | Flèche de retour, icône de l'écran et logo de la rangée de titre |
-| `BoutonSouscrire` | Bouton de souscription de l'accueil, à bandeau « PRO » |
+| `OffreBadge` | Badge du niveau de compte ; cliquable en haut de l'accueil, il ouvre « Faire évoluer mon compte », « Ma demande » ou le compte selon l'état |
 | `DrapeauRond`, `Flag`, `SelecteurPays` | Drapeaux et sélecteur de pays |
 | `RangeeIcones`, `TitreSurPhoto` | Rangées défilantes et titres de l'accueil |
 | `LogoOrg` | Pastille aux initiales et à la couleur d'une organisation |
-| `NuageCle`, `NuageCleTuile` | Icône SVG unique : une grosse clé qui plonge en diagonale dans un nuage, pour l'accès MyApp (propriété `fond` : couleur du fond, qui détache la clé du nuage) |
+| `NuageCle`, `NuageCleTuile` | Icône SVG unique : un nuage avec un cadenas, pour l'accès MyApp (propriété `fond` : couleur du fond, qui détache la clé du nuage) |
 | `Progression` | Schéma Basic, PRO, Business |
 | `AppelsEtDepenses` | Historique filtrable de l'espace client (mode limité ou complet) |
 
@@ -625,7 +626,7 @@ La liste complète et à jour figure dans la section « Points ouverts » de `ME
 | v84 à v94 | Numéros d'urgence, menu repensé, mois offert dans l'historique, Ma conso, filtres et historique complet, ouverture de l'annuaire au clavier, onglet Langue |
 | v95 à v98 | Traduction anglaise complète, recherche selon la langue, filet de sécurité de traduction |
 | v99 | Factures et recharges retirées du menu pour Business, logo en icône du site |
-| v100 à v124 | Fiche entreprise réorganisée (identité et activités dans un bloc, numéro PRO sur une ligne), « Communiquer gratuitement », « Accéder à nos services », fenêtre de communication gratuite simplifiée, présentation Business réécrite, thème toujours clair, formulaire Business en deux parties et e-mail de l'entreprise, boutons « Souscrire à… », titres « Formulaire… », icônes de titre sans fond, site web de l'entreprise |
+| v100 à v128 | Fiche entreprise réorganisée (identité et activités dans un bloc, numéro PRO sur une ligne), « Communiquer gratuitement », « Accéder à nos services », fenêtre de communication gratuite simplifiée, présentation Business réécrite, thème toujours clair, formulaire Business en deux parties et e-mail de l'entreprise, boutons « Souscrire à… », titres « Formulaire… », icônes de titre sans fond, site web de l'entreprise |
 
 Le détail de chaque décision est daté dans `MEMO.md` et dans les commentaires du code.
 

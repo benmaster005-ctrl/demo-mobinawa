@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img alt="Version" src="https://img.shields.io/badge/prototype-v113-E85D04?style=for-the-badge" />
+  <img alt="Version" src="https://img.shields.io/badge/prototype-v122-E85D04?style=for-the-badge" />
   <img alt="React 18" src="https://img.shields.io/badge/React-18.3-3D752F?style=for-the-badge&logo=react&logoColor=white" />
   <img alt="Vite 5" src="https://img.shields.io/badge/Vite-5.4-3D752F?style=for-the-badge&logo=vite&logoColor=white" />
   <img alt="Tailwind CSS 3" src="https://img.shields.io/badge/Tailwind-3.4-3D752F?style=for-the-badge&logo=tailwindcss&logoColor=white" />
@@ -108,7 +108,7 @@ Le dépôt est volontairement **à plat**, sans aucun sous dossier. Le dépôt d
 .
 ├── index.html            Page d'entrée : balises meta, icônes (logo Mobinawa), point de montage #root
 ├── main.jsx              Point d'entrée React : charge automatiquement la dernière version de l'app
-├── Mobinawa_v113.jsx     L'application complète (un seul composant de plus de 7 000 lignes)
+├── Mobinawa_v122.jsx     L'application complète (un seul composant de plus de 7 000 lignes)
 ├── index.css             Directives Tailwind (base, components, utilities)
 ├── tailwind.config.js    Fichiers analysés par Tailwind, dont tous les Mobinawa*.jsx
 ├── postcss.config.js     Tailwind et Autoprefixer
@@ -231,7 +231,7 @@ Tout l'état vit dans `MobinawaApp` sous forme de `useState`. Les écrans le re�
 
 - **Un seul écran à la fois**, désigné par la chaîne `screen`. Il n'y a pas d'adresse par écran.
 - `goTo(ecran)` **empile** l'écran courant. Revenir à l'accueil vide la pile, tout comme l'envoi d'un formulaire de souscription, pour que la flèche de l'accusé de réception ne rouvre pas le formulaire.
-- **Aucun bandeau d'en-tête.** L'accueil porte sa rangée du haut sur la photo. Toutes les autres pages ouvrent sur une **rangée de titre** : flèche de retour à gauche (`BoutonRetour`), icône de l'écran (`IconeEcran`, celle de son onglet dans le menu), titre, logo Mobinawa à droite (`LogoAccueil`, retour direct à l'accueil). Cette rangée reste **figée en haut** au défilement grâce à la classe `rangee-titre`.
+- **Aucun bandeau d'en-tête.** L'accueil porte sa rangée du haut sur la photo. Toutes les autres pages ouvrent sur une **rangée de titre** : flèche de retour à gauche (`BoutonRetour`), icône de l'écran sans fond (`IconeEcran`, celle de son onglet dans le menu), titre, logo Mobinawa à droite (`LogoAccueil`, retour direct à l'accueil). Cette rangée reste **figée en haut** au défilement grâce à la classe `rangee-titre`.
 - Les deux boutons lisent leur action dans deux contextes React, `RetourContext` et `AccueilContext`, fournis par `MobinawaApp`. Un nouvel écran n'a donc rien à recevoir pour les afficher.
 - Chaque changement d'écran remet le défilement en haut de page.
 
@@ -247,8 +247,8 @@ Tout l'état vit dans `MobinawaApp` sous forme de `useState`. Les écrans le re�
 | `moreInfoPro` | `MoreInfoProScreen` (mode « choix ») | Mobinawa-PRO | Carte PRO de Mon compte ; pour la diaspora, commence par le choix du pays |
 | `infoPro` | `MoreInfoProScreen` (mode « info ») | Mobinawa-PRO | « En savoir plus » de la carte PRO (usagers locaux) |
 | `moreInfoBusiness` | `MoreInfoBusinessScreen` | Mobinawa-Business | « En savoir plus » de la carte Business, découverte de la migration |
-| `subscribePro` | `SubscribeProForm` | Demande Mobinawa-PRO | « Demander un numéro PRO » |
-| `subscribeBusiness` | `SubscribeBusinessForm` | Fiche entreprise | « Créer un compte entreprise », « Migrer vers Mobinawa-Business » |
+| `subscribePro` | `SubscribeProForm` | Formulaire Mobinawa-PRO | « Souscrire à Mobinawa-PRO » |
+| `subscribeBusiness` | `SubscribeBusinessForm` | Formulaire Mobinawa-Business | « Souscrire à Mobinawa-Business », « Migrer vers Mobinawa-Business » |
 | `attente` | `AttenteScreen` | Ma demande | Après l'envoi d'un formulaire, « Ma demande en cours » |
 | `account` | `AccountScreen` (`BasicAccount` ou `ProAccount`) | Mon compte ou Mon espace client | Menu |
 | `historique` | `AppelsEtDepenses` (mode complet) | Historique | « Voir tout l'historique » de l'espace client, au delà de 6 éléments |
@@ -281,7 +281,7 @@ Toutes les données sont des **constantes** déclarées en haut du fichier. Les 
 | `TARIFS_PRO`, `TARIFS_BUSINESS`, `CONDITIONS_BUSINESS` | Grilles tarifaires officielles par opérateur | Business affiché hors taxes, PRO toutes taxes comprises |
 | `SECTEURS`, `SOUS_SECTEURS`, `SECTEUR_ICONES` | Les 16 secteurs d'activité, leurs sous secteurs et icônes | Partagés par l'annuaire et le formulaire Business |
 | `CATEGORIES_MISES_EN_AVANT` | Ordre des premières catégories de la rangée d'accueil | Les autres suivent, « Autre » en dernier |
-| `ANNUAIRE_PROCOM` | Les fiches par pays : `id`, `nom`, `secteur`, `sousSecteur`, `numero`, `couleur`, `description`, `webapp` | `webapp: true` active l'option MyApp |
+| `ANNUAIRE_PROCOM` | Les fiches par pays : `id`, `nom`, `secteur`, `sousSecteur`, `numero`, `email` et `site` (facultatifs, simulés), `couleur`, `description`, `webapp` | `webapp: true` active l'option MyApp |
 | `SERVICES_GRATUITS` | Services de l'accueil et de l'écran Services | Une entrée avec `route` est cliquable, les autres portent « Bientôt disponible » |
 | `NUMEROS_URGENCE` | Numéros d'urgence par pays | Cameroun : 117, 113, 118, 119, à faire valider officiellement |
 | `INFOS_PROCOM` | Les quatre informations de la fenêtre « i » de l'annuaire et de « À propos » | |
@@ -321,7 +321,7 @@ Toutes les données sont des **constantes** déclarées en haut du fichier. Les 
 - **Boutons de souscription** : leur libellé suit l'état du compte (« Souscrire un compte ProCom », « Ma demande en cours », « Mon compte ProCom ») pour ne jamais proposer de souscrire deux fois. La logique est centralisée dans `cibleSouscription(statut)`.
 - **Grille tarifaire avant demande** : sur toutes les présentations d'offre, « Consulter la grille tarifaire » précède le bouton de demande.
 - **Business** : l'app ne gère que la demande. Après validation, le menu ne propose plus factures ni recharges.
-- **Annuaire** : seules les organisations Business y figurent. Le numéro de la fiche est un cartouche vert façon numéro de service, lien `tel:` complet, préfixe compris ; l'appel ou le message gratuit passe par la liste de contacts Mobinawa (« Communiquer gratuitement »).
+- **Annuaire** : seules les organisations Business y figurent. Le numéro de la fiche est un cartouche vert façon numéro de service ; seule sa partie numéro est un lien `tel:` complet, préfixe compris ; l'appel ou le message gratuit passe par la liste de contacts Mobinawa (« Communiquer gratuitement »).
 - **Nom de l'opérateur** : un seul nom par opérateur, celui qui signe ses e-mails, partout dans l'app.
 
 ---
@@ -332,7 +332,7 @@ Toutes les données sont des **constantes** déclarées en haut du fichier. Les 
 | --- | --- |
 | Un usager camerounais | Session par défaut (`+237 6 55 12 34 78`) |
 | Un usager de la diaspora | Bloc **Démonstration** en bas de l'accueil, choisissez GTS Africa (`+33 6 12 34 56 78`) |
-| Une souscription PRO | Souscrire un compte ProCom, Demander un numéro PRO, remplir, envoyer, puis **Simuler la validation par nos équipes** |
+| Une souscription PRO | Souscrire un compte ProCom, Souscrire à Mobinawa-PRO, remplir, envoyer, puis **Simuler la validation par nos équipes** |
 | Le mois offert et le découvert | Espace client, **Simuler le prélèvement de ce mois** une fois (mois offert), puis une seconde fois (débit) |
 | Une recharge et un transfert | Espace client, Recharger (carte Visa simulée), puis Transférer |
 | Une migration vers Business | Espace client PRO, Découvrir la migration, Migrer, envoyer la fiche, simuler la validation |
@@ -472,6 +472,7 @@ Les polices sont chargées depuis Google Fonts par une règle `@import` dans le 
 | `DrapeauRond`, `Flag`, `SelecteurPays` | Drapeaux et sélecteur de pays |
 | `RangeeIcones`, `TitreSurPhoto` | Rangées défilantes et titres de l'accueil |
 | `LogoOrg` | Pastille aux initiales et à la couleur d'une organisation |
+| `NuageCle` | Icône SVG unique : une grosse clé qui plonge en diagonale dans un nuage, pour l'accès MyApp (propriété `fond` : couleur du fond, qui détache la clé du nuage) |
 | `Progression` | Schéma Basic, PRO, Business |
 | `AppelsEtDepenses` | Historique filtrable de l'espace client (mode limité ou complet) |
 
@@ -517,7 +518,7 @@ function MonEcran() {
 
 ### Ajouter une organisation à l'annuaire
 
-Ajoutez un objet dans `ANNUAIRE_PROCOM.cm` avec un `id` unique, un `secteur` et un `sousSecteur` **existants**, un `numero`, une `couleur`, une `description` et `webapp`. Traduisez la description dans `TRADUCTIONS_EN` pour la recherche et l'affichage en anglais. La liste est triée par ordre alphabétique automatiquement.
+Ajoutez un objet dans `ANNUAIRE_PROCOM.cm` avec un `id` unique, un `secteur` et un `sousSecteur` **existants**, un `numero`, un `email` et un `site` facultatifs, une `couleur`, une `description` et `webapp`. Traduisez la description dans `TRADUCTIONS_EN` pour la recherche et l'affichage en anglais. La liste est triée par ordre alphabétique automatiquement.
 
 ### Ouvrir un nouveau pays
 
@@ -624,7 +625,7 @@ La liste complète et à jour figure dans la section « Points ouverts » de `ME
 | v84 à v94 | Numéros d'urgence, menu repensé, mois offert dans l'historique, Ma conso, filtres et historique complet, ouverture de l'annuaire au clavier, onglet Langue |
 | v95 à v98 | Traduction anglaise complète, recherche selon la langue, filet de sécurité de traduction |
 | v99 | Factures et recharges retirées du menu pour Business, logo en icône du site |
-| v100 à v113 | Fiche entreprise réorganisée (identité et activités dans un bloc, numéro PRO sur une ligne), « Communiquer gratuitement », « Accéder à nos services », fenêtre de communication gratuite simplifiée, présentation Business réécrite, thème toujours clair |
+| v100 à v122 | Fiche entreprise réorganisée (identité et activités dans un bloc, numéro PRO sur une ligne), « Communiquer gratuitement », « Accéder à nos services », fenêtre de communication gratuite simplifiée, présentation Business réécrite, thème toujours clair, formulaire Business en deux parties et e-mail de l'entreprise, boutons « Souscrire à… », titres « Formulaire… », icônes de titre sans fond, site web de l'entreprise |
 
 Le détail de chaque décision est daté dans `MEMO.md` et dans les commentaires du code.
 

@@ -1,7 +1,8 @@
 /** @jsxRuntime classic */
 /** @jsx creerElement */
 /** @jsxFrag FragmentTraduit */
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
+import { Room, RoomEvent, Track } from "livekit-client";
 import {
   UserCircle2, Menu as MenuIcon, Search, Phone, Video,
   MessageCircle, ChevronRight, ChevronLeft, X, Check, Clock, Briefcase, Home,
@@ -15,7 +16,8 @@ import {
   Hourglass, Lock, Receipt, Wallet, KeyRound,
   History, Coins, Bell, Megaphone, Wrench, Info, Trash2, ArrowUpRight,
   Construction, Trophy, Cloud, Ambulance, Flame, Shield, BarChart3, PhoneOutgoing, Timer,
-  BookUser, BookOpen, Mail
+  BookUser, BookOpen, Mail, Mic, MicOff, Volume2, VolumeX, PhoneOff, Hash,
+  Plus, Calendar, Grid3X3, Wifi, Battery, Delete
 } from "lucide-react";
 
 /* ================================================================== */
@@ -61,6 +63,7 @@ const TRADUCTIONS_EN = {
   "accès direct": "direct access",
   "Accéder au service": "Open the service",
   "Accéder à nos services": "Access our services",
+  "Activer le micro": "Unmute",
   "Achat, conditionnement et exportation de cacao et de café. Relation avec les coopératives de producteurs.": "Purchase, packaging and export of cocoa and coffee. Relations with producer cooperatives.",
   "Action sociale et humanitaire": "Social and humanitarian action",
   "Activité professionnelle": "Professional activity",
@@ -89,9 +92,12 @@ const TRADUCTIONS_EN = {
   "Annuaire ProCom": "ProCom directory",
   "Annuaire téléphonique de l'entreprise": "Company phone directory",
   "apparaît dans vos": "appears in your",
+  "Appel WebRTC sécurisé via réseau ProCom / LiveKit SIP": "Secure WebRTC call via ProCom / LiveKit SIP network",
   "Appel local à": "Local call at",
+  "Appel terminé": "Call ended",
   "Appel vers tout numéro de téléphone local": "Calls to any local phone number",
   "Appel vers tout numéro mobile ou fixe local": "Calls to any local mobile or landline number",
+  "Appeler (WebRTC SIP)": "Call (WebRTC SIP)",
   "Appeler gratuitement": "Call for free",
   "Appeler par le réseau mobile": "Call over the mobile network",
   "Appels au crédit prépayé": "Calls on prepaid credit",
@@ -139,6 +145,8 @@ const TRADUCTIONS_EN = {
   "Blanchisserie et pressing": "Laundry and dry cleaning",
   "BTP et immobilier": "Construction and real estate",
   "C'est à cette adresse que sera envoyé le lien d'accès web à votre compte.": "The web access link to your account will be sent to this address.",
+  "Cabinet dentaire": "Dental practice",
+  "Cabinet dentaire : consultations bucco-dentaires, soins dentaires, détartrage, blanchiment, chirurgie dentaire et urgences.": "Dental practice: oral consultations, dental care, scaling, whitening, dental surgery and emergencies.",
   "Cabinet médical": "Medical practice",
   "Calcul de TVA": "VAT calculator",
   "Cameroun": "Cameroon",
@@ -164,9 +172,13 @@ const TRADUCTIONS_EN = {
   "Chaque fiche est vérifiée par l'opérateur ProCom qui la publie.": "Each listing is verified by the ProCom operator that publishes it.",
   "Chaque recharge est désormais tracée avec son moyen de paiement, son horodatage et sa référence de transaction. Le crédit de bienvenue y apparaît également.": "Each top-up is now recorded with its payment method, timestamp and transaction reference. The welcome credit also appears there.",
   "Chaudronnerie, charpente métallique et pièces sur mesure. Devis et interventions sur site.": "Boilermaking, steel framing and custom parts. Quotes and on-site work.",
+  "Chef de projet GTS Africa : coordination technique, suivi des projets et assistance au déploiement.": "GTS Africa Project Manager: technical coordination, project monitoring and deployment support.",
+  "Chef de projet GTS Africa : pilotage et déploiement des services Mobinawa et solutions ProCom.": "GTS Africa Project Manager: steering and deployment of Mobinawa services and ProCom solutions.",
+  "Chiffré de bout en bout": "End-to-end encrypted",
   "Chimie et pharmacie": "Chemicals and pharmaceuticals",
   "Choisir une catégorie": "Choose a category",
   "Citations du jour": "Quotes of the day",
+  "Clavier SVI": "Keypad",
   "Clinique et hôpital": "Clinic and hospital",
   "Cliquer sur": "Tap",
   "Club sportif et de loisirs": "Sports and leisure club",
@@ -210,9 +222,11 @@ const TRADUCTIONS_EN = {
   "Conseil et services aux entreprises": "Consulting and business services",
   "Conseil juridique": "Legal advice",
   "Conseil juridique, rédaction d'actes et contentieux commercial. Consultations sur rendez-vous.": "Legal advice, drafting of deeds and commercial litigation. Consultations by appointment.",
+  "Connexion au serveur LiveKit...": "Connecting to LiveKit server...",
   "conservés": "kept",
   "Construction et travaux publics": "Construction and public works",
   "Consulter": "Open",
+  "Couper le micro": "Mute",
   "Consulter la grille tarifaire": "See the price list",
   "Consultez le tarif de chaque destination avant d'appeler, depuis le menu ou votre compte PRO. Les tarifs affichés font foi au moment de l'appel.": "Check the rate for each destination before calling, from the menu or your PRO account. The rates shown apply at the time of the call.",
   "contact@entreprise.cm": "contact@company.cm",
@@ -253,6 +267,7 @@ const TRADUCTIONS_EN = {
   "Des services d'utilité publique accessibles à tous les utilisateurs Mobinawa, gratuitement.": "Public interest services available to all Mobinawa users, free of charge.",
   "Description de vos activités": "Description of your activities",
   "directement": "directly",
+  "Direction Générale de GTS Africa : opérateur de services de télécommunications et communications unifiées pour l'Afrique et sa diaspora.": "General Management of GTS Africa: telecommunications operator and unified communications for Africa and its diaspora.",
   "Distribution alimentaire": "Food distribution",
   "Données et intelligence artificielle": "Data and artificial intelligence",
   "Dont offert": "Of which free",
@@ -280,6 +295,7 @@ const TRADUCTIONS_EN = {
   "Email": "E-mail",
   "Email invalide": "Invalid e-mail",
   "En choisissant Business, cette ligne ne pourra pas porter de rattachement PRO.": "By choosing Business, this line will not be able to carry a PRO attachment.",
+  "En communication": "In call",
   "en créant votre base de contacts": "by building your contact list",
   "en partenariat avec": "in partnership with",
   "En production, cette étape repasse par l'activation CIRPACK.": "In production, this step goes through CIRPACK activation again.",
@@ -328,6 +344,7 @@ const TRADUCTIONS_EN = {
   "Gratuit": "Free",
   "Gratuit pendant la phase pilote": "Free during the pilot phase",
   "Gratuit · phase pilote": "Free · pilot phase",
+  "Glisser vers la droite pour appeler": "Slide to the right to call",
   "Grille": "Price list of",
   "Grille tarifaire": "Price list",
   "Gros œuvre, voirie et réseaux divers. Chantiers publics et privés dans le Littoral et le Centre.": "Structural work, roads and utility networks. Public and private sites in the Littoral and Centre regions.",
@@ -338,6 +355,7 @@ const TRADUCTIONS_EN = {
   "Historique des recharges": "Top-up history",
   "Horoscope": "Horoscope",
   "HT": "excl. tax",
+  "Haut-parleur": "Speaker",
   "Hôtel d'affaires à Douala : réservations, salles de réunion, restauration et navette aéroport.": "Business hotel in Douala: bookings, meeting rooms, restaurant and airport shuttle.",
   "Hôtellerie": "Hotels",
   "Hôtellerie, restauration et tourisme": "Hospitality, catering and tourism",
@@ -470,6 +488,7 @@ const TRADUCTIONS_EN = {
   "Nouveauté": "New feature",
   "NOUVEAUTÉ": "NEW FEATURE",
   "Nouvelle recharge": "New top-up",
+  "Numérotation SIP en cours...": "SIP dialing in progress...",
   "Numéro inconnu": "Unknown number",
   "Numéro mobile WhatsApp": "WhatsApp mobile number",
   "Numéro officiel": "Official number",
@@ -535,6 +554,7 @@ const TRADUCTIONS_EN = {
   "Publication dans l'annuaire ProCom": "Listing in the ProCom directory",
   "qu'un mois d'abonnement gratuit. Un e-mail vous a été adressé avec le lien d'accès à votre": "as well as one free month of subscription. An e-mail has been sent to you with the access link to your",
   "Qui paie quoi": "Who pays for what",
+  "Raccrocher": "Hang up",
   "Radio et télévision": "Radio and television",
   "Raison sociale": "Company name",
   "Recharge directement dans l'app, quand vous voulez": "Top up directly in the app, whenever you want",
@@ -1495,6 +1515,7 @@ const SOUS_SECTEURS = {
   ],
   "Santé et action sociale": [
     "Cabinet médical",
+    "Cabinet dentaire",
     "Clinique et hôpital",
     "Pharmacie",
     "Laboratoire d'analyses",
@@ -1985,6 +2006,58 @@ const ANNUAIRE_PROCOM = {
       webapp: false,
     },
     {
+      id: 41,
+      nom: "Cabinet Chérif",
+      sousSecteur: "Cabinet dentaire",
+      secteur: "Santé et action sociale",
+      numero: "+237 6 72 80 34 95",
+      email: "contact@cabinetcherif.cm", // simulé (v114)
+      site: "www.cabinetcherif.cm", // simulé (v116)
+      couleur: "#0D9488",
+      description:
+        "Cabinet dentaire : consultations bucco-dentaires, soins dentaires, détartrage, blanchiment, chirurgie dentaire et urgences.",
+      webapp: false,
+    },
+    {
+      id: 42,
+      nom: "GTS Africa — Project Manager",
+      sousSecteur: "Télécommunications",
+      secteur: "Technologies et numérique",
+      numero: "+33 6 31 23 74 96",
+      email: "project.manager1@gtsafrica.fr", // simulé (v114)
+      site: "www.gtsafrica.fr", // simulé (v116)
+      couleur: "#1F5FA8",
+      description:
+        "Chef de projet GTS Africa : pilotage et déploiement des services Mobinawa et solutions ProCom.",
+      webapp: false,
+    },
+    {
+      id: 43,
+      nom: "GTS Africa — Directeur Général",
+      sousSecteur: "Télécommunications",
+      secteur: "Technologies et numérique",
+      numero: "+237 96 61 35 69",
+      email: "dg@gtsafrica.fr", // simulé (v114)
+      site: "www.gtsafrica.fr", // simulé (v116)
+      couleur: "#1F5FA8",
+      description:
+        "Direction Générale de GTS Africa : opérateur de services de télécommunications et communications unifiées pour l'Afrique et sa diaspora.",
+      webapp: false,
+    },
+    {
+      id: 44,
+      nom: "GTS Africa — Project Manager",
+      sousSecteur: "Télécommunications",
+      secteur: "Technologies et numérique",
+      numero: "+33 7 51 59 73 96",
+      email: "project.manager2@gtsafrica.fr", // simulé (v114)
+      site: "www.gtsafrica.fr", // simulé (v116)
+      couleur: "#1F5FA8",
+      description:
+        "Chef de projet GTS Africa : coordination technique, suivi des projets et assistance au déploiement.",
+      webapp: false,
+    },
+    {
       id: 25,
       nom: "Douala Digital Services",
       sousSecteur: "Services informatiques et infogérance",
@@ -2128,7 +2201,14 @@ function triSecteurs(a, b) {
 function correspond(texte, q) {
   if (!texte) return false;
   const cible = langueUI === "en" ? TRADUCTIONS_EN[texte.replace(/\s+/g, " ").trim()] || texte : texte;
-  return normaliser(cible).includes(q);
+  const normCible = normaliser(cible);
+  const normQ = normaliser(q);
+  if (normCible.includes(normQ)) return true;
+  if (normQ.includes("cabinait") && normCible.includes(normQ.replace(/cabinait/g, "cabinet"))) return true;
+  const numCible = normCible.replace(/[^\d]/g, "");
+  const numQ = normQ.replace(/[^\d]/g, "");
+  if (numQ.length >= 4 && numCible.includes(numQ)) return true;
+  return false;
 }
 
 function normaliser(texte) {
@@ -3963,7 +4043,8 @@ function HomeScreen({ goTo, statut, lignes, ligneActive, operateur, onChangerOpe
           (o) =>
             correspond(o.nom, q) ||
             correspond(o.secteur, q) ||
-            correspond(o.sousSecteur, q)
+            correspond(o.sousSecteur, q) ||
+            correspond(o.numero, q)
         )
         .sort((a, b) => a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" }))
         .slice(0, 6)
@@ -6929,6 +7010,831 @@ function AppelGratuitModal({ org, onClose }) {
   );
 }
 
+/* ==================================================================== */
+/*  GLISSIÈRE D'APPEL WEBRTC SIP : Glisser vers la droite pour appeler   */
+/* ==================================================================== */
+function GlissiereAppelPro({ numero, onAppeler }) {
+  const containerRef = useRef(null);
+  const knobRef = useRef(null);
+  const [dragX, setDragX] = useState(0);
+  const [enGlisse, setEnGlisse] = useState(false);
+  const [maxDrag, setMaxDrag] = useState(130);
+  const startXRef = useRef(0);
+  const isDraggingRef = useRef(false);
+  const maxDragRef = useRef(130);
+  const dragDistRef = useRef(0);
+  const appelDeclencheRef = useRef(false);
+
+  const calculerMaxDrag = () => {
+    if (containerRef.current && knobRef.current) {
+      const cWidth = containerRef.current.clientWidth;
+      const kWidth = knobRef.current.clientWidth;
+      const max = Math.max(40, cWidth - kWidth - 6);
+      setMaxDrag(max);
+      maxDragRef.current = max;
+    }
+  };
+
+  useLayoutEffect(() => {
+    calculerMaxDrag();
+    window.addEventListener("resize", calculerMaxDrag);
+    return () => window.removeEventListener("resize", calculerMaxDrag);
+  }, [numero]);
+
+  const declencherAppel = () => {
+    if (appelDeclencheRef.current) return;
+    appelDeclencheRef.current = true;
+    const max = maxDragRef.current;
+    setEnGlisse(false);
+    setDragX(max);
+    if (typeof onAppeler === "function") {
+      onAppeler();
+    }
+    setTimeout(() => {
+      setDragX(0);
+      appelDeclencheRef.current = false;
+    }, 1200);
+  };
+
+  const onPointerDown = (e) => {
+    isDraggingRef.current = true;
+    startXRef.current = e.clientX;
+    dragDistRef.current = 0;
+    setEnGlisse(true);
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch (_) {}
+  };
+
+  const onPointerMove = (e) => {
+    if (!isDraggingRef.current) return;
+    const max = maxDragRef.current;
+    const diff = Math.max(0, Math.min(e.clientX - startXRef.current, max));
+    dragDistRef.current = diff;
+    setDragX(diff);
+  };
+
+  const onPointerUp = (e) => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    setEnGlisse(false);
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch (_) {}
+
+    const max = maxDragRef.current;
+    // Si glissé à plus de 30% ou simple clic/tap sans déplacement significatif (<= 6px)
+    if (dragDistRef.current >= max * 0.3 || dragDistRef.current <= 6) {
+      declencherAppel();
+    } else {
+      setDragX(0);
+    }
+  };
+
+  const onTrackClick = () => {
+    if (isDraggingRef.current) return;
+    declencherAppel();
+  };
+
+  return (
+    <div className="w-full select-none">
+      <div
+        ref={containerRef}
+        onClick={onTrackClick}
+        className="relative flex items-center justify-end rounded-xl overflow-hidden cursor-pointer"
+        style={{
+          height: 46,
+          border: `2px solid ${C.green}`,
+          background: "#fff",
+        }}
+        title="Glisser vers la droite ou cliquer pour appeler"
+      >
+        {/* Piste verte animée qui suit le curseur */}
+        <div
+          className="absolute inset-y-0 left-0 pointer-events-none transition-all"
+          style={{
+            width: dragX > 0 ? `calc(${dragX}px + 70px)` : 0,
+            background: "rgba(61, 117, 47, 0.12)",
+          }}
+        />
+
+        {/* Numéro de téléphone cible affiché sur la droite */}
+        <div
+          className="flex-1 flex items-center justify-end pr-3.5 pl-3 font-extrabold text-sm tracking-wide"
+          style={{
+            color: C.green,
+            fontFamily: FONT_HEAD,
+            fontVariantNumeric: "tabular-nums",
+            whiteSpace: "nowrap",
+            letterSpacing: 0.3,
+          }}
+        >
+          <span>{numero}</span>
+          <ChevronRight size={15} className="text-emerald-500 ml-1 animate-pulse shrink-0" />
+        </div>
+
+        {/* Bouton glissière « Numéro PRO officiel » */}
+        <div
+          ref={knobRef}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+          className="absolute left-1 top-1 bottom-1 flex items-center gap-1.5 pl-2.5 pr-3 rounded-lg z-10 cursor-grab active:cursor-grabbing shadow-sm"
+          style={{
+            background: C.green,
+            color: "#fff",
+            fontSize: 12,
+            fontWeight: 800,
+            fontFamily: FONT_HEAD,
+            transform: `translate3d(${dragX}px, 0, 0)`,
+            transition: enGlisse ? "none" : "transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)",
+            touchAction: "none",
+            boxShadow: enGlisse ? "0 4px 14px rgba(61, 117, 47, 0.4)" : "none",
+          }}
+        >
+          <span
+            className="flex items-center justify-center rounded-full shrink-0"
+            style={{ width: 22, height: 22, border: "1.5px solid #fff" }}
+          >
+            <Phone size={11} />
+          </span>
+          <span className="whitespace-nowrap">Numéro PRO officiel</span>
+          <ChevronRight size={14} className="opacity-80 ml-0.5 shrink-0" />
+        </div>
+      </div>
+
+      {/* Indication sous la barre */}
+      <div className="flex items-center justify-center gap-1.5 mt-2 px-1 text-xs font-semibold text-emerald-800">
+        <ChevronRight size={13} className="text-emerald-600 animate-pulse" />
+        <span>Glisser vers la droite ou appuyer pour appeler</span>
+      </div>
+    </div>
+  );
+}
+
+/* ==================================================================== */
+/*  INTERFACE D'APPEL WEBRTC VERS SIP LIVEKIT                            */
+/*  Appel moderne, épuré et sécurisé aux couleurs de Mobinawa           */
+/* ==================================================================== */
+function LiveKitCallModal({ org, onClose }) {
+  const [etat, setEtat] = useState("dialing"); // "dialing" | "connected" | "ended" | "error"
+  const [secondes, setSecondes] = useState(0);
+  const [microCoupe, setMicroCoupe] = useState(false);
+  const [hautParleur, setHautParleur] = useState(true);
+  const [clavierActif, setClavierActif] = useState(false);
+  const [touches, setTouches] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [waveHeights, setWaveHeights] = useState([14, 22, 32, 18, 28, 16, 24]);
+
+  const roomRef = useRef(null);
+  const remoteAudioRef = useRef(null);
+  const currentRoomNameRef = useRef(null);
+  const mediaStreamRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const visIntervalRef = useRef(null);
+  const microCoupeRef = useRef(false);
+
+  // Initialisation et connexion directe à l'appel
+  useEffect(() => {
+    let unmounted = false;
+    let timerInterval = null;
+
+    function startTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      const startTime = Date.now();
+      timerInterval = setInterval(() => {
+        if (!unmounted) {
+          const elapsed = Math.floor((Date.now() - startTime) / 1000);
+          setSecondes(elapsed);
+        }
+      }, 1000);
+    }
+
+    function setupVisualizer(stream) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        audioContextRef.current = audioCtx;
+        const source = audioCtx.createMediaStreamSource(stream);
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 32;
+        source.connect(analyser);
+
+        const buffer = new Uint8Array(analyser.frequencyBinCount);
+
+        visIntervalRef.current = setInterval(() => {
+          if (!analyser || unmounted) return;
+          analyser.getByteFrequencyData(buffer);
+          const heights = [];
+          for (let i = 0; i < 7; i++) {
+            const val = buffer[i] || 0;
+            const h = Math.max(8, Math.min(38, Math.round((val / 255) * 38)));
+            heights.push(h);
+          }
+          setWaveHeights(heights);
+        }, 120);
+      } catch (_) {}
+    }
+
+    async function demarrerAppel() {
+      if (unmounted) return;
+      setEtat("dialing");
+      setErrorMessage("");
+      microCoupeRef.current = false;
+      setMicroCoupe(false);
+
+      let dest = (org.numero || "").trim().replace(/[\s\-\(\)\.]/g, "");
+      if (!dest.startsWith("+") && !dest.startsWith("00")) {
+        dest = "+" + dest;
+      }
+
+      try {
+        // 1. Demande d'autorisation du microphone sans conflit
+        try {
+          if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === "function") {
+            const probe = await navigator.mediaDevices.getUserMedia({
+              audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+            });
+            // Libérer le probe pour que LiveKit ait un accès microphone propre et exclusif
+            probe.getTracks().forEach((t) => t.stop());
+          }
+        } catch (micErr) {
+          console.warn("[Mobinawa Voice] Micro permission probe:", micErr.message);
+        }
+
+        if (unmounted) return;
+
+        // 2. Requête vers le backend (/api/calls)
+        console.log("[Mobinawa Voice] Envoi requête /api/calls vers:", dest);
+        const res = await fetch("/api/calls", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ destinationNumber: dest, orgName: org.nom }),
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || "Échec de connexion au serveur d'appel");
+        }
+
+        const { roomName, token, livekitUrl } = data.call;
+        currentRoomNameRef.current = roomName;
+        console.log("[Mobinawa Voice] Appel SIP initié dans la room:", roomName);
+
+        if (unmounted) return;
+
+        // 3. Connexion WebRTC LiveKit
+        const room = new Room({ adaptiveStream: true, dynacast: true });
+        roomRef.current = room;
+
+        const passerEnCommunication = () => {
+          if (!unmounted) {
+            setEtat((prev) => {
+              if (prev !== "connected" && prev !== "ended") {
+                console.log("[Mobinawa Voice] >>> APPEL DÉCROCHÉ : Passage en communication");
+                startTimer();
+                return "connected";
+              }
+              return prev;
+            });
+          }
+        };
+
+        const attacherTrackAudio = (track) => {
+          if (!track) return;
+          const isAudio = track.kind === Track.Kind.Audio || track.kind === "audio";
+          if (!isAudio) return;
+          console.log("[Mobinawa Voice] Flux audio distant reçu et attaché");
+          try {
+            if (remoteAudioRef.current) {
+              track.attach(remoteAudioRef.current);
+              remoteAudioRef.current.play().catch((e) => console.warn("[Mobinawa Audio] play:", e));
+            } else {
+              const el = track.attach();
+              el.autoplay = true;
+              el.playsInline = true;
+              el.style.position = "fixed";
+              el.style.top = "-9999px";
+              el.style.left = "-9999px";
+              el.style.width = "1px";
+              el.style.height = "1px";
+              el.style.opacity = "0.01";
+              document.body.appendChild(el);
+              el.play().catch((e) => console.warn("[Mobinawa Audio] play:", e));
+            }
+          } catch (err) {
+            console.warn("[Mobinawa Voice] Erreur attachement track:", err);
+          }
+          // On ne bascule PAS en 'connected' ici : l'audio de sonnerie (early media)
+          // est joué tout en maintenant l'état 'Sonnerie en cours...' jusqu'au vrai décrochage.
+        };
+
+        const inspecterParticipantSip = (p) => {
+          if (!p) return;
+          const callStatus = p.attributes?.["sip.callStatus"];
+          console.log(`[Mobinawa Voice] Statut SIP participant (${p.identity}):`, callStatus);
+          if (callStatus === "active") {
+            passerEnCommunication();
+          } else if (callStatus === "dialing" || callStatus === "ringing") {
+            if (!unmounted && etat !== "connected") {
+              setEtat("dialing");
+            }
+          } else if (callStatus === "hangup") {
+            if (!unmounted) {
+              setEtat("ended");
+              setTimeout(() => { if (!unmounted) onClose(); }, 1800);
+            }
+          }
+        };
+
+        // Événement quand l'audio du correspondant est reçu (sonnerie ou voix)
+        room.on(RoomEvent.TrackSubscribed, (track, pub, participant) => {
+          console.log("[Mobinawa Voice] TrackSubscribed:", track.kind);
+          attacherTrackAudio(track);
+          if (participant) inspecterParticipantSip(participant);
+        });
+
+        room.on(RoomEvent.TrackPublished, (pub, participant) => {
+          console.log("[Mobinawa Voice] TrackPublished:", pub.kind);
+          pub.setSubscribed(true);
+          if (participant) inspecterParticipantSip(participant);
+        });
+
+        // Détection du changement de statut SIP (décrochage : sip.callStatus passe à 'active')
+        room.on(RoomEvent.ParticipantAttributesChanged, (changedAttrs, participant) => {
+          console.log("[Mobinawa Voice] ParticipantAttributesChanged:", changedAttrs);
+          inspecterParticipantSip(participant);
+        });
+
+        // Détection de voix distante (dès que le correspondant parle, passage en communication)
+        room.on(RoomEvent.ActiveSpeakersChanged, (speakers) => {
+          const hasRemoteSpeaker = speakers.some((s) => !s.isLocal);
+          if (hasRemoteSpeaker) {
+            console.log("[Mobinawa Voice] Voix détectée du correspondant -> Passage en communication");
+            passerEnCommunication();
+          }
+        });
+
+        room.on(RoomEvent.ParticipantConnected, (p) => {
+          console.log("[Mobinawa Voice] Participant connecté:", p.identity);
+          inspecterParticipantSip(p);
+          p.on?.("attributesChanged", () => inspecterParticipantSip(p));
+          p.trackPublications.forEach((pub) => {
+            if (pub.track) attacherTrackAudio(pub.track);
+          });
+        });
+
+        room.on(RoomEvent.ParticipantDisconnected, () => {
+          console.log("[Mobinawa Voice] Participant déconnecté");
+          if (!unmounted) {
+            setEtat("ended");
+            setTimeout(() => { if (!unmounted) onClose(); }, 1800);
+          }
+        });
+
+        room.on(RoomEvent.Disconnected, () => {
+          if (!unmounted) {
+            setEtat("ended");
+            setTimeout(() => { if (!unmounted) onClose(); }, 1800);
+          }
+        });
+
+        // Connexion à la salle LiveKit
+        await room.connect(livekitUrl, token);
+        console.log("[Mobinawa Voice] Connecté à la room LiveKit:", roomName);
+
+        // Publier le flux microphone de l'utilisateur (en respectant le statut courant)
+        try {
+          const shouldEnable = !microCoupeRef.current;
+          await room.localParticipant.setMicrophoneEnabled(shouldEnable);
+          console.log("[Mobinawa Voice] Microphone local initialisé dans la room:", shouldEnable ? "ACTIF" : "COUPÉ");
+          if (!shouldEnable) {
+            room.localParticipant.audioTrackPublications?.forEach((pub) => {
+              pub.mute?.();
+              try { pub.pauseUpstream?.(); } catch (_) {}
+              if (pub.track?.mediaStreamTrack) {
+                pub.track.mediaStreamTrack.enabled = false;
+              }
+            });
+          }
+        } catch (micPubErr) {
+          console.warn("[Mobinawa Voice] Publier micro local:", micPubErr);
+        }
+
+        // Vérifier si des participants distants sont déjà présents dans la room
+        room.remoteParticipants.forEach((p) => {
+          console.log("[Mobinawa Voice] Participant distant déjà présent:", p.identity);
+          inspecterParticipantSip(p);
+          p.on?.("attributesChanged", () => inspecterParticipantSip(p));
+          p.trackPublications.forEach((pub) => {
+            if (pub.track) attacherTrackAudio(pub.track);
+          });
+        });
+
+      } catch (err) {
+        console.error("[Mobinawa Voice] Erreur appel:", err.message);
+        if (!unmounted) {
+          setEtat("error");
+          setErrorMessage(err.message);
+        }
+      }
+    }
+
+    demarrerAppel();
+
+    return () => {
+      unmounted = true;
+      if (timerInterval) clearInterval(timerInterval);
+      if (visIntervalRef.current) clearInterval(visIntervalRef.current);
+      if (audioContextRef.current && audioContextRef.current.state !== "closed") {
+        audioContextRef.current.close().catch(() => {});
+      }
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(t => t.stop());
+      }
+      if (roomRef.current) {
+        try { roomRef.current.disconnect(); } catch (_) {}
+        roomRef.current = null;
+      }
+    };
+  }, [org.numero, org.nom]);
+
+  const formaterTemps = (sec) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m < 10 ? "0" : ""}${m}:${s < 10 ? "0" : ""}${s}`;
+  };
+
+  const handleRaccrocher = () => {
+    if (currentRoomNameRef.current) {
+      fetch("/api/end-call", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roomName: currentRoomNameRef.current }),
+      }).catch(() => {});
+      currentRoomNameRef.current = null;
+    }
+    if (roomRef.current) {
+      try {
+        roomRef.current.disconnect();
+      } catch (e) {
+        // ignore
+      }
+      roomRef.current = null;
+    }
+    setEtat("ended");
+    setTimeout(() => {
+      onClose();
+    }, 1000);
+  };
+
+  const handleToggleMicro = async () => {
+    const nextMicroCoupe = !microCoupe;
+    microCoupeRef.current = nextMicroCoupe;
+    setMicroCoupe(nextMicroCoupe);
+    console.log("[Mobinawa Voice] Clic Micro. Nouvel état micro coupé :", nextMicroCoupe);
+
+    if (roomRef.current?.localParticipant) {
+      const lp = roomRef.current.localParticipant;
+      const shouldEnable = !nextMicroCoupe;
+
+      // 1. Appel méthode standard LiveKit
+      try {
+        await lp.setMicrophoneEnabled(shouldEnable);
+      } catch (e) {
+        console.warn("[LiveKit] Erreur setMicrophoneEnabled:", e);
+      }
+
+      // 2. Mute / Unmute & Pause / Resume Upstream sur toutes les pistes audio publiées
+      try {
+        const audioPubs = lp.audioTrackPublications ? Array.from(lp.audioTrackPublications.values()) : [];
+        for (const pub of audioPubs) {
+          if (pub?.track) {
+            if (nextMicroCoupe) {
+              await pub.mute().catch(() => {});
+              try { await pub.pauseUpstream?.(); } catch (_) {}
+              if (pub.track.mediaStreamTrack) {
+                pub.track.mediaStreamTrack.enabled = false;
+              }
+            } else {
+              await pub.unmute().catch(() => {});
+              try { await pub.resumeUpstream?.(); } catch (_) {}
+              if (pub.track.mediaStreamTrack) {
+                pub.track.mediaStreamTrack.enabled = true;
+              }
+            }
+          }
+        }
+      } catch (trackErr) {
+        console.warn("[LiveKit] Erreur bascule manuelle pistes audio:", trackErr);
+      }
+    }
+
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getAudioTracks().forEach((track) => {
+        track.enabled = !nextMicroCoupe;
+      });
+    }
+  };
+
+  const handleToggleHautParleur = () => {
+    const nextHP = !hautParleur;
+    setHautParleur(nextHP);
+    if (remoteAudioRef.current) {
+      remoteAudioRef.current.muted = !nextHP;
+    }
+  };
+
+  const dtmfCodeMap = {
+    "0": 0, "1": 1, "2": 2, "3": 3, "4": 4,
+    "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
+    "*": 10, "#": 11,
+  };
+
+  const jouerSonDtmf = (touche) => {
+    try {
+      const dtmfFreqs = {
+        "1": [697, 1209], "2": [697, 1336], "3": [697, 1477],
+        "4": [770, 1209], "5": [770, 1336], "6": [770, 1477],
+        "7": [852, 1209], "8": [852, 1336], "9": [852, 1477],
+        "*": [941, 1209], "0": [941, 1336], "#": [941, 1477],
+      };
+      const freqs = dtmfFreqs[touche];
+      if (!freqs) return;
+      const ctx = audioContextRef.current || new (window.AudioContext || window.webkitAudioContext)();
+      audioContextRef.current = ctx;
+      if (ctx.state === "suspended") ctx.resume();
+
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+
+      osc1.frequency.value = freqs[0];
+      osc2.frequency.value = freqs[1];
+
+      gainNode.gain.setValueAtTime(0.06, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+
+      osc1.connect(gainNode);
+      osc2.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      osc1.start();
+      osc2.start();
+      osc1.stop(ctx.currentTime + 0.12);
+      osc2.stop(ctx.currentTime + 0.12);
+    } catch (_) {}
+  };
+
+  const taperTouche = async (val) => {
+    setTouches((prev) => prev + val);
+    jouerSonDtmf(val);
+
+    // Envoi DTMF officiel LiveKit SIP (RFC 4733 / RFC 2833 vers le SVI)
+    if (roomRef.current?.localParticipant) {
+      try {
+        const code = dtmfCodeMap[val] ?? 0;
+        if (typeof roomRef.current.localParticipant.publishDtmf === "function") {
+          await roomRef.current.localParticipant.publishDtmf(code, String(val));
+        } else {
+          const payload = new TextEncoder().encode(JSON.stringify({ dtmf: val }));
+          roomRef.current.localParticipant.publishData(payload, { reliable: true });
+        }
+      } catch (err) {
+        console.warn("[Mobinawa Voice] Erreur émission DTMF:", err);
+      }
+    }
+  };
+
+  const effacerDerniereTouche = () => {
+    setTouches((prev) => prev.slice(0, -1));
+  };
+
+  const touchesClavier = [
+    { k: "1", sub: "" },
+    { k: "2", sub: "ABC" },
+    { k: "3", sub: "DEF" },
+    { k: "4", sub: "GHI" },
+    { k: "5", sub: "JKL" },
+    { k: "6", sub: "MNO" },
+    { k: "7", sub: "PQRS" },
+    { k: "8", sub: "TUV" },
+    { k: "9", sub: "WXYZ" },
+    { k: "*", sub: "" },
+    { k: "0", sub: "+" },
+    { k: "#", sub: "" },
+  ];
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 w-full h-full flex flex-col justify-between bg-[#1C1D1F] text-white select-none transition-all px-4 py-5 sm:py-7 sm:px-6"
+    >
+      {/* Audio HTML5 pour le flux vocal du destinataire (conforme index.html / app.js) */}
+      <audio
+        ref={remoteAudioRef}
+        autoPlay
+        playsInline
+        style={{ position: "fixed", top: -9999, left: -9999, width: 1, height: 1, opacity: 0.01 }}
+      />
+
+      {/* Barre supérieure discrète Mobile First (fermeture d'appel) */}
+      <div className="w-full max-w-md mx-auto flex items-center justify-end pt-1 px-1">
+        <button
+          onClick={handleRaccrocher}
+          className="p-2 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-white/70 hover:text-white"
+          aria-label="Fermer"
+        >
+          <X size={20} />
+        </button>
+      </div>
+
+      {/* Section Supérieure : Avatar + Nom + État / Minuteur + Numéro */}
+      <div className="w-full max-w-md mx-auto flex flex-col items-center pt-1 sm:pt-4 text-center px-4">
+        {/* Avatar circulaire neutre comme sur la maquette */}
+        <div
+          className="w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center shadow-xl relative"
+          style={{
+            background: "#5B5F66",
+            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
+          }}
+        >
+          {org.logo ? (
+            <img
+              src={org.logo}
+              alt={org.nom}
+              className="w-full h-full rounded-full object-cover"
+            />
+          ) : (
+            <svg viewBox="0 0 24 24" fill="#FFFFFF" className="w-14 h-14 sm:w-16 sm:h-16 opacity-95">
+              <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2.5c-3.34 0-10 1.68-10 5v2.5h20v-2.5c0-3.32-6.66-5-10-5z" />
+            </svg>
+          )}
+        </div>
+
+        {/* Nom du contact / entreprise (grand, blanc, gras) */}
+        <h2
+          className="text-2xl sm:text-3xl font-bold text-white tracking-normal mt-4 px-4 text-center truncate max-w-full"
+          style={{ fontFamily: FONT_HEAD }}
+        >
+          {org.nom}
+        </h2>
+
+        {/* État / Minuteur sous le nom */}
+        <div className="mt-1.5 flex flex-col items-center">
+          {etat === "connected" ? (
+            <div className="text-base sm:text-lg font-semibold tracking-wider text-white/90 font-mono">
+              {formaterTemps(secondes)}
+            </div>
+          ) : etat === "dialing" || etat === "connecting" ? (
+            <div className="text-sm sm:text-base font-normal text-white/70 tracking-wide flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              <span>Sonnerie en cours...</span>
+            </div>
+          ) : etat === "ended" ? (
+            <div className="text-sm sm:text-base font-semibold text-red-400">
+              Appel terminé ({formaterTemps(secondes)})
+            </div>
+          ) : etat === "error" ? (
+            <div className="text-xs sm:text-sm font-semibold text-red-400 px-4 max-w-xs">
+              {errorMessage || "Impossible de joindre le correspondant"}
+            </div>
+          ) : null}
+
+          {/* Numéro de téléphone en sous-titre discret */}
+          <div className="text-xs sm:text-sm font-mono text-white/40 mt-0.5 tracking-wider">
+            {org.numero}
+          </div>
+        </div>
+      </div>
+
+      {/* Section Centrale : Interface SVI Moderne OU Contrôles d'appel (Micro, SVI, HP) */}
+      <div className="w-full max-w-md mx-auto flex flex-col items-center justify-center my-auto py-3">
+        {clavierActif ? (
+          /* Interface SVI Moderne Complète & Ergonomique */
+          <div className="w-full max-w-[310px] mx-auto flex flex-col items-center">
+            {/* Écran d'affichage des chiffres SVI composés avec retour arrière */}
+            <div className="w-full h-12 flex items-center justify-between px-3.5 mb-3 bg-white/5 rounded-2xl border border-white/10">
+              <span className="text-2xl font-mono font-bold tracking-widest text-emerald-400 truncate flex-1 text-center">
+                {touches || <span className="text-xs text-white/30 font-sans tracking-normal font-normal">Composez un chiffre SVI</span>}
+              </span>
+              {touches && (
+                <button
+                  onClick={effacerDerniereTouche}
+                  className="p-1.5 text-white/60 hover:text-white rounded-lg hover:bg-white/10 active:scale-95 transition-all"
+                  aria-label="Effacer"
+                  title="Effacer"
+                >
+                  <Delete size={18} />
+                </button>
+              )}
+            </div>
+
+            {/* Pavé 3x4 des touches SVI circulaires modernes */}
+            <div className="grid grid-cols-3 gap-2.5 sm:gap-3 w-full justify-items-center">
+              {touchesClavier.map((item) => (
+                <button
+                  key={item.k}
+                  onClick={() => taperTouche(item.k)}
+                  className="w-16 h-16 sm:w-[68px] sm:h-[68px] rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 active:scale-90 transition-all flex flex-col items-center justify-center text-white cursor-pointer select-none border border-white/5 shadow-sm"
+                >
+                  <span className="text-2xl font-bold leading-none">{item.k}</span>
+                  {item.sub ? (
+                    <span className="text-[9px] font-semibold tracking-wider text-white/50 leading-none mt-0.5">
+                      {item.sub}
+                    </span>
+                  ) : (
+                    <span className="h-[9px] mt-0.5" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Bouton pour replier le clavier et revenir aux 3 boutons d'appel */}
+            <button
+              onClick={() => setClavierActif(false)}
+              className="mt-3.5 px-5 py-2 text-xs font-semibold text-white/80 hover:text-white bg-white/10 hover:bg-white/15 rounded-full transition-all active:scale-95 flex items-center gap-1.5"
+            >
+              <span>Masquer le clavier</span>
+            </button>
+          </div>
+        ) : (
+          /* Les 3 boutons essentiels : Microphone, SVI (Clavier) et Haut-parleur */
+          <div className="flex items-center justify-center gap-6 sm:gap-10 w-full">
+            {/* 1. Microphone */}
+            <div className="flex flex-col items-center gap-2">
+              <button
+                onClick={handleToggleMicro}
+                aria-label={microCoupe ? "Activer le micro" : "Couper le micro"}
+                className={`w-[74px] h-[74px] rounded-3xl flex items-center justify-center transition-all cursor-pointer select-none active:scale-95 shadow-md ${
+                  microCoupe
+                    ? "bg-white text-[#1C1D1F] shadow-white/20 ring-2 ring-white/30"
+                    : "bg-[#383A3E]/80 hover:bg-[#383A3E] text-white border border-white/5"
+                }`}
+              >
+                {microCoupe ? <MicOff size={28} /> : <Mic size={28} />}
+              </button>
+              <span className={`text-xs font-medium transition-colors ${
+                microCoupe ? "text-amber-400 font-semibold" : "text-white/70"
+              }`}>
+                {microCoupe ? "Micro coupé" : "Micro"}
+              </span>
+            </div>
+
+            {/* 2. SVI (Clavier DTMF) */}
+            <div className="flex flex-col items-center gap-2">
+              <button
+                onClick={() => setClavierActif(true)}
+                aria-label="Clavier SVI"
+                className="w-[74px] h-[74px] rounded-3xl flex items-center justify-center transition-all cursor-pointer select-none active:scale-95 bg-[#383A3E]/80 hover:bg-[#383A3E] text-white border border-white/5 shadow-md"
+              >
+                <Grid3X3 size={28} />
+              </button>
+              <span className="text-xs text-white/70 font-medium">Clavier SVI</span>
+            </div>
+
+            {/* 3. Haut-Parleur */}
+            <div className="flex flex-col items-center gap-2">
+              <button
+                onClick={handleToggleHautParleur}
+                aria-label={hautParleur ? "Désactiver haut-parleur" : "Activer haut-parleur"}
+                className={`w-[74px] h-[74px] rounded-3xl flex items-center justify-center transition-all cursor-pointer select-none active:scale-95 shadow-md ${
+                  !hautParleur
+                    ? "bg-[#383A3E]/40 text-white/40 border border-white/5"
+                    : "bg-[#383A3E]/80 hover:bg-[#383A3E] text-white border border-white/5"
+                }`}
+              >
+                {hautParleur ? <Volume2 size={28} /> : <VolumeX size={28} />}
+              </button>
+              <span className="text-xs text-white/70 font-medium">Haut-parleur</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Section Inférieure : Bouton Raccrocher circulaire rouge grand format */}
+      <div className="w-full max-w-md mx-auto pb-5 sm:pb-7 flex flex-col items-center">
+        <button
+          onClick={handleRaccrocher}
+          aria-label="Raccrocher"
+          className="rounded-full flex items-center justify-center transition-transform active:scale-90 shadow-2xl cursor-pointer"
+          style={{
+            width: 72,
+            height: 72,
+            background: "#E53935",
+            boxShadow: "0 12px 30px rgba(229, 57, 53, 0.5)",
+          }}
+        >
+          <svg viewBox="0 0 24 24" fill="#FFFFFF" className="w-9 h-9 transform rotate-[135deg]">
+            <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2a15.053 15.053 0 0 1-6.59-6.59l2.2-2.21a.96.96 0 0 0 .25-1A11.36 11.36 0 0 1 8.5 3.99c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.49c0-.55-.45-1-.99-1.12z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* Logo de l'organisation : initiales colorées tant qu'aucune image n'est
    fournie dans sa fiche ProcomCRM. */
 function LogoOrg({ org, size = 44 }) {
@@ -7052,6 +7958,7 @@ function ProcomScreen({ pays, onChangerPays, filtreInitial, onFiltreChange }) {
   const [sousSecteur, setSousSecteur] = useState("");
   const [paysOuvert, setPaysOuvert] = useState(false);
   const [aideAppel, setAideAppel] = useState(false);
+  const [appelEnCours, setAppelEnCours] = useState(null); // organisation appelée via LiveKit WebRTC
   const [infoOuverte, setInfoOuverte] = useState(false);
   const [infoMyApp, setInfoMyApp] = useState(null); // organisation dont on explique l'icône (v124)
 
@@ -7089,7 +7996,8 @@ function ProcomScreen({ pays, onChangerPays, filtreInitial, onFiltreChange }) {
         correspond(o.nom, q) ||
         correspond(o.secteur, q) ||
         correspond(o.sousSecteur, q) ||
-        correspond(o.description, q))
+        correspond(o.description, q) ||
+        correspond(o.numero, q))
   ).sort((a, b) => a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" })); // ordre alphabétique (v80)
 
   /* Le choix est remonté à l'app : l'accueil met en avant la même catégorie. */
@@ -7176,44 +8084,20 @@ function ProcomScreen({ pays, onChangerPays, filtreInitial, onFiltreChange }) {
             cartouche est un lien d'appel complet, préfixe compris (v80). Sur un
             écran étroit, le libellé passe sur deux lignes. */}
         <Card>
-          {/* Seule la partie du numéro lance l'appel GSM (v116) ; le bloc
-              « Numéro PRO officiel » n'est pas cliquable. */}
-          <div
-            className="flex items-stretch rounded-xl overflow-hidden"
-            style={{ border: `2px solid ${C.green}`, background: "#fff" }}
-          >
-            <span
-              className="flex items-center gap-1.5 pl-2 pr-3 py-1.5 shrink leading-tight"
-              style={{ background: C.green, color: "#fff", fontSize: 12, fontWeight: 800, fontFamily: FONT_HEAD, borderRadius: 10 }}
-            >
-              <span
-                className="flex items-center justify-center rounded-full shrink-0"
-                style={{ width: 22, height: 22, border: "1.5px solid #fff" }}
-              >
-                <Phone size={11} />
-              </span>
-              Numéro PRO officiel
-            </span>
-            <a
-              href={`tel:${fiche.numero.replace(/[^+\d]/g, "")}`}
-              className="flex-1 flex items-center justify-center px-2.5 py-1.5 font-extrabold text-sm active:bg-black/5"
-              style={{ color: C.green, fontFamily: FONT_HEAD, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap", letterSpacing: 0.3, textDecoration: "none" }}
-            >
-              {fiche.numero}
-            </a>
-          </div>
-          <p className="text-xs leading-relaxed mt-1.5 text-center" style={{ color: C.muted }}>
-            Toucher le numéro pour un appel au tarif de votre opérateur mobile
-          </p>
+          <GlissiereAppelPro
+            numero={fiche.numero}
+            onAppeler={() => setAppelEnCours(fiche)}
+          />
         </Card>
 
         <div className="flex flex-col gap-2">
-          <PrimaryButton color={C.green} onClick={() => setAideAppel(true)}>
+          <GhostButton color={C.blue} onClick={() => setAideAppel(true)}>
             <span className="inline-flex items-center gap-1.5">
               {/* « Communiquer » : on peut aussi écrire, pas seulement appeler (v100) */}
               <MessageCircle size={15} /> Communiquer gratuitement
             </span>
-          </PrimaryButton>
+          </GhostButton>
+
           {fiche.webapp && (
             <div className="flex items-center gap-2">
               <GhostButton color={C.blue}>
@@ -7231,6 +8115,7 @@ function ProcomScreen({ pays, onChangerPays, filtreInitial, onFiltreChange }) {
         {/* Encart « Fiche publiée par… » retiré (v112) */}
 
         {aideAppel && <AppelGratuitModal org={fiche} onClose={() => setAideAppel(false)} />}
+        {appelEnCours && <LiveKitCallModal org={appelEnCours} onClose={() => setAppelEnCours(null)} />}
       </div>
     );
   }

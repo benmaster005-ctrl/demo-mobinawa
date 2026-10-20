@@ -299,7 +299,7 @@ Après dépôt d'une demande, aucun bandeau ne signale le dossier sur l'accueil.
 
 ## Le prototype
 
-**Le fichier.** `Mobinawa_v131.jsx`, un composant React d'environ 5 500 lignes, sans dépendance hors `react` et `lucide-react`. Il est abondamment commenté : chaque règle produit non évidente porte l'explication de son existence. C'est le support de reprise le plus complet.
+**Le fichier.** `Mobinawa_v132.jsx` (issu de `Mobinawa_v131.jsx`), un composant React sans dépendance hors `react` et `lucide-react`. Il est abondamment commenté : chaque règle produit non évidente porte l'explication de son existence. C'est le support de reprise le plus complet.
 
 **Convention de version.** Le numéro du fichier est incrémenté à chaque itération. Une constante `VERSION_PROTO` en tête du fichier porte le même numéro et s'affiche en pied de l'écran « À propos ». Les deux ne doivent jamais diverger.
 

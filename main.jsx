@@ -12,9 +12,7 @@ const derniere = Object.keys(versions).sort((a, b) => numero(a) - numero(b)).pop
 const MobinawaApp = lazy(versions[derniere]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <Suspense fallback={null}>
-      <MobinawaApp />
-    </Suspense>
-  </React.StrictMode>
+  <Suspense fallback={null}>
+    <MobinawaApp />
+  </Suspense>
 );

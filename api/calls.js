@@ -28,7 +28,11 @@ function normalizePhoneNumber(raw) {
   let cleaned = raw.trim().replace(/[\s\-\.\(\)]/g, '');
   if (cleaned.startsWith('00')) cleaned = '+' + cleaned.slice(2);
   if (!cleaned.startsWith('+')) {
-    if (/^[26]\d{8}$/.test(cleaned)) {
+    if (/^0[67]\d{8}$/.test(cleaned)) {
+      cleaned = '+33' + cleaned.slice(1);
+    } else if (/^[26]\d{8}$/.test(cleaned)) {
+      cleaned = '+237' + cleaned;
+    } else if (/^9\d{7}$/.test(cleaned)) {
       cleaned = '+237' + cleaned;
     } else {
       cleaned = '+' + cleaned;
@@ -94,8 +98,9 @@ export default async function handler(req, res) {
     const trunkUsername = getEnv('SIP_AUTH_USERNAME');
     const trunkPassword = getEnv('SIP_AUTH_PASSWORD');
     const trunkCountry = getEnv('SIP_DESTINATION_COUNTRY', 'CM');
-    const rawCaller = getEnv('SIP_CALLER_NUMBER', destination);
-    const callerNumber = rawCaller;
+    // Le numéro de l'utilisateur connecté devient le fromNumber
+    const rawCaller = data.fromNumber || data.callerNumber || data.from || getEnv('SIP_CALLER_NUMBER', '');
+    const callerNumber = normalizePhoneNumber(rawCaller) || rawCaller || destination;
 
     const transportEnv = getEnv('SIP_TRANSPORT', 'udp').toLowerCase();
     const transportMap = { udp: 1, tcp: 2, tls: 3 };
@@ -112,17 +117,17 @@ export default async function handler(req, res) {
       transport,
     });
 
-    console.log(`[Mobinawa SIP] Appel vers ${destination} | Room: ${roomName} | Trunk: ${trunkHostname}`);
+    console.log(`[Mobinawa SIP] Appel de ${callerNumber} (fromNumber) vers ${destination} (<phone-number-to-dial>) | Room: ${roomName} | Trunk: ${trunkHostname}`);
 
     try {
       const participant = await api.sip.createSipParticipant(
         '',
-        destination,
+        destination, // <phone-number-to-dial>
         roomName,
         {
           participantIdentity: `sip-${destination.replace(/\+/g, '')}`,
           participantName: `PSTN (${destination})`,
-          fromNumber: callerNumber,
+          fromNumber: callerNumber, // numéro de l'utilisateur connecté
           waitUntilAnswered,
           ringingTimeout,
         },
@@ -152,3 +157,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ success: false, error: err.message || 'Erreur interne' });
   }
 }
+

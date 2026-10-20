@@ -28,7 +28,11 @@ export function normalizePhoneNumber(raw) {
   let cleaned = raw.trim().replace(/[\s\-\.\(\)]/g, '');
   if (cleaned.startsWith('00')) cleaned = '+' + cleaned.slice(2);
   if (!cleaned.startsWith('+')) {
-    if (/^[26]\d{8}$/.test(cleaned)) {
+    if (/^0[67]\d{8}$/.test(cleaned)) {
+      cleaned = '+33' + cleaned.slice(1);
+    } else if (/^[26]\d{8}$/.test(cleaned)) {
+      cleaned = '+237' + cleaned;
+    } else if (/^9\d{7}$/.test(cleaned)) {
       cleaned = '+237' + cleaned;
     } else {
       cleaned = '+' + cleaned;
@@ -101,8 +105,10 @@ export function livekitVitePlugin(env = {}) {
               const trunkUsername = getEnv('SIP_AUTH_USERNAME');
               const trunkPassword = getEnv('SIP_AUTH_PASSWORD');
               const trunkCountry = getEnv('SIP_DESTINATION_COUNTRY', 'CM');
-              const rawCaller = getEnv('SIP_CALLER_NUMBER', destination);
-              const callerNumber = rawCaller;
+
+              // Le numéro de l'utilisateur connecté devient le fromNumber
+              const rawCaller = data.fromNumber || data.callerNumber || data.from || getEnv('SIP_CALLER_NUMBER', '');
+              const callerNumber = normalizePhoneNumber(rawCaller) || rawCaller || destination;
 
               const transportEnv = getEnv('SIP_TRANSPORT', 'udp').toLowerCase();
               const transportMap = { udp: 1, tcp: 2, tls: 3 };
@@ -119,18 +125,18 @@ export function livekitVitePlugin(env = {}) {
                 transport,
               });
 
-              console.log(`[Mobinawa SIP] Appel vers ${destination} | Room: ${roomName} | Trunk: ${trunkHostname}`);
+              console.log(`[Mobinawa SIP] Appel de ${callerNumber} (fromNumber) vers ${destination} (<phone-number-to-dial>) | Room: ${roomName} | Trunk: ${trunkHostname}`);
 
               // C. Lancement de l'appel SIP sortant vers le destinataire
               try {
                 const participant = await api.sip.createSipParticipant(
                   '', // Configuration inline
-                  destination,
+                  destination, // <phone-number-to-dial>
                   roomName,
                   {
                     participantIdentity: `sip-${destination.replace(/\+/g, '')}`,
                     participantName: `PSTN (${destination})`,
-                    fromNumber: callerNumber,
+                    fromNumber: callerNumber, // numéro de l'utilisateur connecté
                     waitUntilAnswered,
                     ringingTimeout,
                   },
@@ -217,6 +223,112 @@ export function livekitVitePlugin(env = {}) {
             },
           }));
           return;
+        }
+
+        // 4. POST /api/auth ou GET /api/auth
+        if (pathname === '/api/auth' || pathname === '/api/login') {
+          const DATABASE_USERS = [
+            {
+              id: 'usr_33631237496',
+              msisdn: '+33 6 31 23 74 96',
+              msisdnRaw: '+33631237496',
+              paysCode: 'FR',
+              nom: 'Thomas Dubois',
+              role: 'Utilisateur',
+              verifieLe: '20/10/2026',
+              soldeCompte: 25,
+              devise: 'EUR',
+            },
+            {
+              id: 'usr_23796613569',
+              msisdn: '+237 96 61 35 69',
+              msisdnRaw: '+23796613569',
+              paysCode: 'CM',
+              nom: 'Koffi Mensah',
+              role: 'Utilisateur',
+              verifieLe: '20/10/2026',
+              soldeCompte: 15000,
+              devise: 'FCFA',
+            },
+            {
+              id: 'usr_33751597396',
+              msisdn: '+33 7 51 59 73 96',
+              msisdnRaw: '+33751597396',
+              paysCode: 'FR',
+              nom: 'Marie Claire',
+              role: 'Utilisateur',
+              verifieLe: '20/10/2026',
+              soldeCompte: 40,
+              devise: 'EUR',
+            },
+          ];
+
+          function cleanPhoneAuth(raw) {
+            if (!raw || typeof raw !== 'string') return '';
+            let cleaned = raw.trim().replace(/[\s\-\.\(\)]/g, '');
+            if (cleaned.startsWith('00')) cleaned = '+' + cleaned.slice(2);
+            if (/^0[67]\d{8}$/.test(cleaned)) {
+              cleaned = '+33' + cleaned.slice(1);
+            } else if (/^[26]\d{8}$/.test(cleaned)) {
+              cleaned = '+237' + cleaned;
+            } else if (/^9\d{7}$/.test(cleaned)) {
+              cleaned = '+237' + cleaned;
+            }
+            if (!cleaned.startsWith('+')) {
+              cleaned = '+' + cleaned;
+            }
+            return cleaned;
+          }
+
+          if (req.method === 'GET') {
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({
+              success: true,
+              count: DATABASE_USERS.length,
+              allowedNumbers: DATABASE_USERS.map((u) => u.msisdnRaw),
+            }));
+            return;
+          }
+
+          if (req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => { body += chunk; });
+            req.on('end', () => {
+              try {
+                const data = JSON.parse(body || '{}');
+                const rawNumber = data.phoneNumber || data.destinationNumber || data.msisdn || '';
+                const normalized = cleanPhoneAuth(rawNumber);
+                const user = DATABASE_USERS.find(
+                  (u) =>
+                    u.msisdnRaw === normalized ||
+                    cleanPhoneAuth(u.msisdn) === normalized ||
+                    cleanPhoneAuth(u.msisdnRaw) === normalized
+                );
+
+                res.setHeader('Content-Type', 'application/json');
+                if (!user) {
+                  res.statusCode = 401;
+                  res.end(JSON.stringify({
+                    success: false,
+                    error: "Ce numéro de téléphone n'est pas enregistré dans notre base de données.",
+                  }));
+                  return;
+                }
+
+                res.statusCode = 200;
+                res.end(JSON.stringify({
+                  success: true,
+                  message: 'Connexion réussie',
+                  user,
+                }));
+              } catch (err) {
+                res.statusCode = 500;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ success: false, error: err.message }));
+              }
+            });
+            return;
+          }
         }
 
         next();

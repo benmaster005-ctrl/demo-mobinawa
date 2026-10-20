@@ -38,6 +38,17 @@ let langueUI = "fr";
 const FragmentTraduit = React.Fragment;
 
 const TRADUCTIONS_EN = {
+  "Connexion": "Login",
+  "Connexion Mobinawa": "Mobinawa Login",
+  "Réseau d'appels & services": "Call network & services",
+  "Portail sécurisé": "Secure portal",
+  "Connectez-vous avec votre numéro de téléphone mobile enregistré en base de données.": "Log in with your mobile phone number registered in the database.",
+  "Numéro de téléphone": "Phone number",
+  "Se connecter": "Log in",
+  "Vérification...": "Verifying...",
+  "Numéros autorisés en base de données": "Numbers authorized in database",
+  "3 enregistrés": "3 registered",
+  "Contrôle d'accès E.164 vérifié par base de données Mobinawa": "E.164 access control verified by Mobinawa database",
   "% vs mois dernier": "% vs last month",
   ") sur le crédit du compte.": ") from the account credit.",
   "), aux comptes identifiés par un numéro mobile de leur pays. Votre compte relevant de": "), to accounts identified by a mobile number from their country. As your account belongs to",
@@ -952,11 +963,71 @@ function somme(n, operateur) {
 const VERSION_PROTO = "v132";
 
 const SESSION_CIRPACK = {
-  msisdn: "+237 6 55 12 34 78",
+  msisdn: "+237 96 61 35 69",
   paysCode: "CM",
   nom: "Koffi Mensah",
-  verifieLe: "12/08/2026",
+  verifieLe: "20/10/2026",
 };
+
+/* Base de données des comptes autorisés à se connecter */
+const COMPTES_AUTORISES_DB = [
+  {
+    id: "usr_33631237496",
+    msisdn: "+33 6 31 23 74 96",
+    msisdnRaw: "+33631237496",
+    pays: "France",
+    paysCode: "FR",
+    flag: "🇫🇷",
+    nom: "Thomas Dubois",
+    role: "Abonné Mobinawa",
+    verifieLe: "20/10/2026",
+    soldeCompte: 25,
+    devise: "EUR",
+  },
+  {
+    id: "usr_23796613569",
+    msisdn: "+237 96 61 35 69",
+    msisdnRaw: "+23796613569",
+    pays: "Cameroun",
+    paysCode: "CM",
+    flag: "🇨🇲",
+    nom: "Koffi Mensah",
+    role: "Abonné Mobinawa",
+    verifieLe: "20/10/2026",
+    soldeCompte: 15000,
+    devise: "FCFA",
+  },
+  {
+    id: "usr_33751597396",
+    msisdn: "+33 7 51 59 73 96",
+    msisdnRaw: "+33751597396",
+    pays: "France",
+    paysCode: "FR",
+    flag: "🇫🇷",
+    nom: "Marie Claire",
+    role: "Abonné Mobinawa",
+    verifieLe: "20/10/2026",
+    soldeCompte: 40,
+    devise: "EUR",
+  },
+];
+
+function cleanPhoneAuth(raw) {
+  if (!raw || typeof raw !== "string") return "";
+  let cleaned = raw.trim().replace(/[\s\-\.\(\)]/g, "");
+  if (cleaned.startsWith("00")) cleaned = "+" + cleaned.slice(2);
+  if (/^0[67]\d{8}$/.test(cleaned)) {
+    cleaned = "+33" + cleaned.slice(1);
+  } else if (/^[26]\d{8}$/.test(cleaned)) {
+    cleaned = "+237" + cleaned;
+  } else if (/^9\d{7}$/.test(cleaned)) {
+    cleaned = "+237" + cleaned;
+  }
+  if (!cleaned.startsWith("+")) {
+    cleaned = "+" + cleaned;
+  }
+  return cleaned;
+}
 
 
 
@@ -1559,6 +1630,21 @@ function sousSecteursDe(secteur) {
    Jeu de démonstration : en production, ces fiches viennent de ProcomCRM. */
 const ANNUAIRE_PROCOM = {
   cm: [
+    /* Fiche épinglée en tête de liste : GTS-Infotel Cameroon Standard Opérateur */
+    {
+      id: 45,
+      nom: "GTS-Infotel Cameroon — Standard",
+      sousSecteur: "Télécommunications",
+      secteur: "Technologies et numérique",
+      numero: "+237 242 232 095",
+      email: "standard@gtsinfotelcameroon.cm",
+      site: "www.gtsinfotelcameroon.cm",
+      couleur: "#1F5FA8",
+      description:
+        "Standard principal de GTS-Infotel Cameroon, opérateur ProCom au Cameroun. Renseignements, assistance aux usagers et orientation vers les services Mobinawa-PRO et Mobinawa-Business.",
+      webapp: false,
+      epingle: true, // toujours en tête de liste
+    },
     /* Fiche de l'opérateur lui-même : l'accusé de réception renvoie
        l'usager vers elle. Numéro fourni en v76. */
     {
@@ -2003,58 +2089,6 @@ const ANNUAIRE_PROCOM = {
       couleur: "#2F8A6B",
       description:
         "Officine de garde, préparation d'ordonnances et conseil. Vérification de disponibilité par téléphone.",
-      webapp: false,
-    },
-    {
-      id: 41,
-      nom: "Cabinet Chérif",
-      sousSecteur: "Cabinet dentaire",
-      secteur: "Santé et action sociale",
-      numero: "+237 6 72 80 34 95",
-      email: "contact@cabinetcherif.cm", // simulé (v114)
-      site: "www.cabinetcherif.cm", // simulé (v116)
-      couleur: "#0D9488",
-      description:
-        "Cabinet dentaire : consultations bucco-dentaires, soins dentaires, détartrage, blanchiment, chirurgie dentaire et urgences.",
-      webapp: false,
-    },
-    {
-      id: 42,
-      nom: "GTS Africa — Project Manager",
-      sousSecteur: "Télécommunications",
-      secteur: "Technologies et numérique",
-      numero: "+33 6 31 23 74 96",
-      email: "project.manager1@gtsafrica.fr", // simulé (v114)
-      site: "www.gtsafrica.fr", // simulé (v116)
-      couleur: "#1F5FA8",
-      description:
-        "Chef de projet GTS Africa : pilotage et déploiement des services Mobinawa et solutions ProCom.",
-      webapp: false,
-    },
-    {
-      id: 43,
-      nom: "GTS Africa — Directeur Général",
-      sousSecteur: "Télécommunications",
-      secteur: "Technologies et numérique",
-      numero: "+237 96 61 35 69",
-      email: "dg@gtsafrica.fr", // simulé (v114)
-      site: "www.gtsafrica.fr", // simulé (v116)
-      couleur: "#1F5FA8",
-      description:
-        "Direction Générale de GTS Africa : opérateur de services de télécommunications et communications unifiées pour l'Afrique et sa diaspora.",
-      webapp: false,
-    },
-    {
-      id: 44,
-      nom: "GTS Africa — Project Manager",
-      sousSecteur: "Télécommunications",
-      secteur: "Technologies et numérique",
-      numero: "+33 7 51 59 73 96",
-      email: "project.manager2@gtsafrica.fr", // simulé (v114)
-      site: "www.gtsafrica.fr", // simulé (v116)
-      couleur: "#1F5FA8",
-      description:
-        "Chef de projet GTS Africa : coordination technique, suivi des projets et assistance au déploiement.",
       webapp: false,
     },
     {
@@ -2775,12 +2809,20 @@ function Toast({ toast }) {
 /*            → une ligne porte UN SEUL rattachement                     */
 /* ==================================================================== */
 export default function MobinawaApp() {
-  /* --- session ouverte en amont : l'entrée commune (numéro + OTP WhatsApp ou SMS)
-     est assurée par la plateforme CIRPACK. L'app démarre sur un compte déjà
-     activé et récupère l'identité vérifiée. --- */
-  const [compte, setCompte] = useState(SESSION_CIRPACK);
+  /* Session utilisateur : récupérée depuis le stockage local si déjà connecté,
+     ou null pour demander une authentification par numéro autorisé. */
+  const [compte, setCompte] = useState(() => {
+    try {
+      const saved = localStorage.getItem("mobinawa_session");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.msisdn) return parsed;
+      }
+    } catch (e) {}
+    return null;
+  });
   /* Déduit du préfixe du numéro : conditionne les offres et la devise. */
-  const operateur = operateurDe(compte.msisdn);
+  const operateur = operateurDe(compte?.msisdn);
 
   /* --- offre souscrite --- */
   const [offre, setOffre] = useState(null);
@@ -2789,8 +2831,8 @@ export default function MobinawaApp() {
   const [entreprise, setEntreprise] = useState(null);
 
   /* --- lignes mobiles --- */
-  const [lignes, setLignes] = useState([
-    { id: 1, msisdn: SESSION_CIRPACK.msisdn, rattachement: "perso", numero: null, soldeCompte: null, soldeAppel: null, statut: "active" },
+  const [lignes, setLignes] = useState(() => [
+    { id: 1, msisdn: compte?.msisdn || "+237 96 61 35 69", rattachement: "perso", numero: null, soldeCompte: null, soldeAppel: null, statut: "active" },
   ]);
 
   /* --- journal des recharges : crédit de bienvenue puis rechargements --- */
@@ -3214,6 +3256,31 @@ export default function MobinawaApp() {
     return <CompteSupprimeScreen motif={compteSupprime} onReinscrire={reinscrire} />;
   }
 
+  /* Écran de connexion si aucun compte n'est connecté */
+  if (!compte) {
+    return (
+      <EcranConnexion
+        onLogin={(utilisateur) => {
+          setCompte(utilisateur);
+          setLignes([
+            {
+              id: 1,
+              msisdn: utilisateur.msisdn,
+              rattachement: "perso",
+              numero: null,
+              soldeCompte: utilisateur.soldeCompte || null,
+              soldeAppel: null,
+              statut: "active",
+            },
+          ]);
+          try {
+            localStorage.setItem("mobinawa_session", JSON.stringify(utilisateur));
+          } catch (e) {}
+        }}
+      />
+    );
+  }
+
   return (
     <div
       ref={appRef}
@@ -3477,6 +3544,7 @@ export default function MobinawaApp() {
               onChangerPays={setPaysProcom}
               filtreInitial={procomFiltre}
               onFiltreChange={setProcomFiltre}
+              userNumber={compte?.msisdnRaw || compte?.msisdn}
             />
           )}
           {screen === "subscribePro" && (
@@ -3538,6 +3606,13 @@ export default function MobinawaApp() {
             ligneActive={ligneActive}
             onSupprimer={simulerSuppression}
             langue={langue}
+            onDeconnexion={() => {
+              setCompte(null);
+              setMenuOpen(false);
+              try {
+                localStorage.removeItem("mobinawa_session");
+              } catch (e) {}
+            }}
           />
         )}
         {welcomeOpen && <WelcomeModal onClose={() => setWelcomeOpen(false)} />}
@@ -3567,7 +3642,7 @@ export default function MobinawaApp() {
 /* ------------------------------------------------------------------ */
 /*  SIDE MENU (drawer)                                                  */
 /* ------------------------------------------------------------------ */
-function SideMenu({ onClose, goTo, statut, lignes, ligneActive, onSupprimer, langue = "fr" }) {
+function SideMenu({ onClose, goTo, statut, lignes, ligneActive, onSupprimer, langue = "fr", onDeconnexion }) {
   /* L'espace client est celui du titulaire d'un numéro PRO. Sur un compte
      Business, il relève du Manager, sur la plateforme web. */
   const espaceClient =
@@ -3663,9 +3738,15 @@ function SideMenu({ onClose, goTo, statut, lignes, ligneActive, onSupprimer, lan
           {/* Séparation entre la souscription et la déconnexion (v86) */}
           <div aria-hidden="true" className="my-2" style={{ height: 1, background: C.border }} />
 
-          <button className="flex items-center gap-3 py-3 px-2 rounded-xl active:bg-black/5 text-left">
-            <IconTile icon={<LogOut size={19} />} color={C.muted} bg="#F1F3F6" />
-            <span className="text-sm font-semibold" style={{ color: C.muted, fontFamily: FONT_BODY }}>
+          <button
+            onClick={() => {
+              onClose();
+              if (onDeconnexion) onDeconnexion();
+            }}
+            className="flex items-center gap-3 py-3 px-2 rounded-xl active:bg-black/5 text-left w-full hover:bg-black/5"
+          >
+            <IconTile icon={<LogOut size={19} />} color={C.alertText} bg={C.alertBg} />
+            <span className="text-sm font-semibold" style={{ color: C.alertText, fontFamily: FONT_BODY }}>
               Se déconnecter
             </span>
           </button>
@@ -4046,7 +4127,11 @@ function HomeScreen({ goTo, statut, lignes, ligneActive, operateur, onChangerOpe
             correspond(o.sousSecteur, q) ||
             correspond(o.numero, q)
         )
-        .sort((a, b) => a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" }))
+        .sort((a, b) => {
+          if (a.epingle && !b.epingle) return -1;
+          if (!a.epingle && b.epingle) return 1;
+          return a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" });
+        })
         .slice(0, 6)
     : [];
 
@@ -4900,10 +4985,10 @@ function BasicAccount({ compte, goTo, statut, operateur, onOpenWelcome }) {
   return (
     <>
       <Card className="flex items-center gap-3">
-        <Avatar name={SESSION_CIRPACK.nom} color={C.blueLight} size={52} />
+        <Avatar name={compte.nom || SESSION_CIRPACK.nom} color={C.blueLight} size={52} />
         <div>
           <div className="font-extrabold text-sm" style={{ color: C.text, fontFamily: FONT_HEAD }}>
-            {SESSION_CIRPACK.nom}
+            {compte.nom || SESSION_CIRPACK.nom}
           </div>
           <div className="text-xs" style={{ color: C.muted }}>
             Compte activé · {compte.msisdn}
@@ -7177,7 +7262,7 @@ function GlissiereAppelPro({ numero, onAppeler }) {
 /*  INTERFACE D'APPEL WEBRTC VERS SIP LIVEKIT                            */
 /*  Appel moderne, épuré et sécurisé aux couleurs de Mobinawa           */
 /* ==================================================================== */
-function LiveKitCallModal({ org, onClose }) {
+function LiveKitCallModal({ org, fromNumber, onClose }) {
   const [etat, setEtat] = useState("dialing"); // "dialing" | "connected" | "ended" | "error"
   const [secondes, setSecondes] = useState(0);
   const [microCoupe, setMicroCoupe] = useState(false);
@@ -7264,12 +7349,30 @@ function LiveKitCallModal({ org, onClose }) {
 
         if (unmounted) return;
 
+        let callerNum = fromNumber;
+        if (!callerNum) {
+          try {
+            const saved = localStorage.getItem("mobinawa_session");
+            if (saved) {
+              const parsed = JSON.parse(saved);
+              if (parsed && (parsed.msisdnRaw || parsed.msisdn)) {
+                callerNum = parsed.msisdnRaw || parsed.msisdn;
+              }
+            }
+          } catch (e) {}
+        }
+
         // 2. Requête vers le backend (/api/calls)
-        console.log("[Mobinawa Voice] Envoi requête /api/calls vers:", dest);
+        console.log("[Mobinawa Voice] Envoi requête /api/calls vers:", dest, "depuis:", callerNum);
         const res = await fetch("/api/calls", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ destinationNumber: dest, orgName: org.nom }),
+          body: JSON.stringify({
+            destinationNumber: dest,
+            fromNumber: callerNum || "",
+            callerNumber: callerNum || "",
+            orgName: org.nom,
+          }),
         });
 
         const data = await res.json();
@@ -7949,7 +8052,7 @@ function InfosProcomModal({ onClose }) {
   );
 }
 
-function ProcomScreen({ pays, onChangerPays, filtreInitial, onFiltreChange }) {
+function ProcomScreen({ pays, onChangerPays, filtreInitial, onFiltreChange, userNumber }) {
   /* Le pays consulté est porté par l'app : l'accueil et cet écran le
      partagent, et la catégorie choisie sur l'accueil arrive en filtre. */
 
@@ -7998,7 +8101,12 @@ function ProcomScreen({ pays, onChangerPays, filtreInitial, onFiltreChange }) {
         correspond(o.sousSecteur, q) ||
         correspond(o.description, q) ||
         correspond(o.numero, q))
-  ).sort((a, b) => a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" })); // ordre alphabétique (v80)
+  ).sort((a, b) => {
+    // Les fiches épinglées passent toujours en tête
+    if (a.epingle && !b.epingle) return -1;
+    if (!a.epingle && b.epingle) return 1;
+    return a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" });
+  }); // ordre alphabétique, épinglés en tête (v80)
 
   /* Le choix est remonté à l'app : l'accueil met en avant la même catégorie. */
   function choisirSecteur(v) {
@@ -8115,7 +8223,13 @@ function ProcomScreen({ pays, onChangerPays, filtreInitial, onFiltreChange }) {
         {/* Encart « Fiche publiée par… » retiré (v112) */}
 
         {aideAppel && <AppelGratuitModal org={fiche} onClose={() => setAideAppel(false)} />}
-        {appelEnCours && <LiveKitCallModal org={appelEnCours} onClose={() => setAppelEnCours(null)} />}
+        {appelEnCours && (
+          <LiveKitCallModal
+            org={appelEnCours}
+            fromNumber={userNumber}
+            onClose={() => setAppelEnCours(null)}
+          />
+        )}
       </div>
     );
   }
@@ -8721,6 +8835,231 @@ function CompteSupprimeScreen({ motif, onReinscrire }) {
           <p className="text-center text-xs mt-3" style={{ color: "rgba(255,255,255,0.5)", fontFamily: FONT_BODY }}>
             En production, cette étape repasse par l'activation CIRPACK.
           </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  ÉCRAN DE CONNEXION                                                */
+/*  Permet à l'utilisateur de se connecter avec un numéro autorisé    */
+/*  enregistré en base de données (+33631237496, +23796613569, +33751597396) */
+/* ------------------------------------------------------------------ */
+function EcranConnexion({ onLogin }) {
+  const [numero, setNumero] = useState("");
+  const [erreur, setErreur] = useState("");
+  const [chargement, setChargement] = useState(false);
+
+  // Détection du pays tapé pour l'indicateur visuel
+  const compact = numero.replace(/[\s\-\.]/g, "");
+  const codePays = compact.startsWith("+33") || compact.startsWith("06") || compact.startsWith("07")
+    ? "FR"
+    : compact.startsWith("+237") || /^[269]\d{7,8}/.test(compact)
+    ? "CM"
+    : null;
+
+  async function validerConnexion(numAValider) {
+    const rawToTest = numAValider || numero;
+    setErreur("");
+
+    if (!rawToTest.trim()) {
+      setErreur("Veuillez saisir votre numéro de téléphone.");
+      return;
+    }
+
+    setChargement(true);
+
+    // 1. Tenter l'appel API /api/auth
+    try {
+      const resp = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phoneNumber: rawToTest }),
+      });
+      if (resp.ok) {
+        const json = await resp.json();
+        if (json.success && json.user) {
+          onLogin(json.user);
+          return;
+        }
+      }
+    } catch (e) {
+      // Fallback local transparent si le serveur n'est pas actif
+    }
+
+    // 2. Vérification locale immédiate dans la base de données autorisée
+    const cleaned = cleanPhoneAuth(rawToTest);
+    const trouve = COMPTES_AUTORISES_DB.find(
+      (c) =>
+        c.msisdnRaw === cleaned ||
+        cleanPhoneAuth(c.msisdn) === cleaned ||
+        cleanPhoneAuth(c.msisdnRaw) === cleaned
+    );
+
+    if (trouve) {
+      onLogin(trouve);
+    } else {
+      setErreur(
+        "Ce numéro n'est pas autorisé en base de données."
+      );
+      setChargement(false);
+    }
+  }
+
+  return (
+    <div
+      className="w-full flex items-start justify-center hauteur-ecran"
+      style={{ overflow: "hidden", background: "#DDE5D9", fontFamily: FONT_BODY }}
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; }
+        .hauteur-ecran { height: 100vh; height: 100dvh; }
+        ::-webkit-scrollbar { display: none; }
+      `}</style>
+      <div
+        className="relative w-full flex flex-col px-6 pt-10 pb-8 hauteur-ecran"
+        style={{
+          maxWidth: 430,
+          overflowY: "auto",
+          background: `linear-gradient(165deg, #1C3817 0%, ${C.blue} 45%, ${C.blueDark} 100%)`,
+          boxShadow: "0 0 40px rgba(0,0,0,0.2)",
+        }}
+      >
+        {/* Header Logo Mobinawa */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-2.5">
+            <div className="rounded-xl p-1.5 shadow-md" style={{ background: "#fff" }}>
+              <img src={LOGO_SRC} alt="Mobinawa" style={{ width: 32, height: 30, display: "block" }} />
+            </div>
+            <div>
+              <span className="text-white font-extrabold text-xl tracking-tight block leading-tight" style={{ fontFamily: FONT_HEAD }}>
+                Mobinawa
+              </span>
+              <span className="text-xs font-semibold block" style={{ color: "rgba(255,255,255,0.7)" }}>
+                Réseau d'appels & services
+              </span>
+            </div>
+          </div>
+          <div
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
+            style={{ background: "rgba(255,255,255,0.12)", color: "#fff" }}
+          >
+            <ShieldCheck size={13} color="#2FA36B" />
+            <span>Portail sécurisé</span>
+          </div>
+        </div>
+
+        {/* Titre & sous-titre */}
+        <div className="mb-6">
+          <h1 className="text-white text-2xl font-extrabold leading-tight mb-2" style={{ fontFamily: FONT_HEAD }}>
+            Connexion
+          </h1>
+          <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
+            Connectez-vous avec votre numéro de téléphone mobile enregistré en base de données.
+          </p>
+        </div>
+
+        {/* Carte de formulaire principale */}
+        <div
+          className="rounded-3xl p-5 mb-6 shadow-xl"
+          style={{ background: "#FFFFFF", color: C.text }}
+        >
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              validerConnexion();
+            }}
+          >
+            <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: C.muted, fontFamily: FONT_HEAD }}>
+              Numéro de téléphone
+            </label>
+
+            <div
+              className="flex items-center gap-2.5 px-3.5 py-3 rounded-2xl border transition-all"
+              style={{
+                borderColor: erreur ? C.alertText : C.border,
+                background: "#F9FBF8",
+              }}
+            >
+              <div
+                className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 font-medium text-base shadow-sm"
+                style={{ background: "#fff", border: `1px solid ${C.border}` }}
+              >
+                {codePays === "FR" ? "🇫🇷" : codePays === "CM" ? "🇨🇲" : <Phone size={16} color={C.blue} />}
+              </div>
+
+              <input
+                type="tel"
+                value={numero}
+                onChange={(e) => {
+                  setNumero(e.target.value);
+                  if (erreur) setErreur("");
+                }}
+                placeholder="Ex : +33 6... ou +237 9..."
+                className="w-full bg-transparent text-base font-semibold outline-none placeholder:text-gray-400"
+                style={{ color: C.text, fontFamily: FONT_BODY }}
+                autoFocus
+              />
+
+              {numero && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNumero("");
+                    setErreur("");
+                  }}
+                  className="p-1 rounded-full text-gray-400 hover:text-gray-600 active:bg-black/5"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+
+            {erreur && (
+              <div
+                className="mt-3 p-3 rounded-xl flex items-start gap-2.5 text-xs font-medium leading-relaxed"
+                style={{
+                  background: C.alertBg,
+                  color: C.alertText,
+                  border: `1px solid ${C.alertBorder}`,
+                }}
+              >
+                <Info size={15} className="shrink-0 mt-0.5" />
+                <span>{erreur}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={chargement}
+              className="w-full rounded-2xl py-3.5 mt-5 font-bold text-white text-sm flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all"
+              style={{
+                background: C.orange,
+                fontFamily: FONT_HEAD,
+                opacity: chargement ? 0.8 : 1,
+              }}
+            >
+              {chargement ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Vérification...</span>
+                </>
+              ) : (
+                <>
+                  <KeyRound size={17} />
+                  <span>Se connecter</span>
+                </>
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* Footer info sécurité */}
+        <div className="mt-auto pt-4 flex items-center justify-center gap-2 text-center text-xs text-white/60">
+          <Shield size={13} color="#2FA36B" />
+          <span>Contrôle d'accès E.164 vérifié par base de données Mobinawa</span>
         </div>
       </div>
     </div>
